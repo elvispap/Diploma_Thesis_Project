@@ -1,0 +1,21 @@
+{% extends "publications_skeleton.html" %}
+{% load pagination_tags %}
+{% load static %}
+{% block title %} Citations {% endblock %}
+
+{% block content %} 
+	<div id="main_content_citations">
+		<div id="search_div_citations">
+			<input type="text" id="search_publication_cited" class="search_div" placeholder="Search here..." size="70">
+		</div> 
+		<div id="publications_cited">
+			{% autopaginate citations 35 %}
+			<ul id="publications_cited_ul">
+			{% for citation in citations %}
+				<li><a class="text_3" href="{{citation.pub_url}}"> {{citation.pub_title}} </a></li>
+			{% endfor %}
+			</ul>
+			{% paginate %}
+		</div>
+	</div>
+{% endblock %}

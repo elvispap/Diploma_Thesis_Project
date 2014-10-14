@@ -1,0 +1,53 @@
+{% extends "publications_skeleton_central_page.html" %}
+{% load pagination_tags %}
+{% load static %}
+{% block title %} All Publications {% endblock %}
+
+{% block content %} 
+	<div id="results_content">
+		
+		<div id="publications_search">
+			<label> {{results|length}} results found....</label><a href="/home"><img src="{% static "img/go_back.png" %}"  alt="search again" height="20" width="20"></a>
+		</div>
+		
+		<div id="main_results_content">
+			{% autopaginate results 6 %}
+		 	{% for result in results %}
+			    	<div class="publication">
+			    		
+			    		<div class="publication_col1_search_results">
+			    			{% if doc_title %}
+			    				<a class="text_1" href={{result.url}}> {{result.title}}</a><hr class="text_2">
+			    			{% else %}
+			    				<a class="text_1" href={{result.url}}> {{result.title}}</a><hr class="text_2">
+			    			{% endif %}
+			    			
+			    			{% ifnotequal result.date "-" %}
+				    			<label>Publication year: {{result.date}}</label><br>
+				    		{% endifnotequal %}
+				    		
+				    		{% ifnotequal result.citations "-" %}
+				    			<div>Citations: <a>{{result.citations}}</a></div>
+				    			
+				    		{% endifnotequal %}
+				    		
+				    		{% ifnotequal result.type "-"%}
+				    			<label>Type: {{result.type}}</label>
+				    		{% endifnotequal %}
+				    		{% ifnotequal result.venue "-" %}
+				    			<h3>{{result.venue}}</h3>
+				    		{% endifnotequal %}
+				   			<br> 
+				    	</div>
+				    	{% if result.doi %}
+					    	<div class="publication_col2_search_results">
+					    		<div class='altmetric-embed' data-badge-type='donut' data-badge-popover='left' data-doi={{result.doi}}></div>
+					    	</div>
+				    	{% endif %}
+			    	</div>
+			    {% endfor %}
+			    {% paginate %}
+			
+		</div>
+	</div>
+{% endblock %}

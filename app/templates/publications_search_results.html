@@ -1,0 +1,122 @@
+{% extends "publications_skeleton.html" %}
+{% load pagination_tags %}
+{% load static %}
+{% block title %} Search Publications {% endblock %}
+
+{% block content %} 
+	<div id="results_content">
+		{% if author_name %}
+			<div id="publications_keywords_search">
+				<label> {{results|length}} publications which contain the keyword   "{{keyword}}"  </label>  <a href="/authors/{{ author_name.split|join:"_" }}"><img src="{% static "img/go_back.png" %}" height="20" width="20"></a>
+			</div>
+		{% elif top_keyw_search %}
+			<div id="publications_search">
+				<label> {{results|length}} publications which contain the keyword   "{{keyword}}" </label><a href="/publications"><img src="{% static "img/go_back.png" %}"  alt="search again" height="20" width="20"></a>
+			</div>
+		{% elif home_search_by_keyword %}
+			<div id="publications_search">
+				<label> {{results|length}} results found....</label><a href="/eece"><img src="{% static "img/go_back.png" %}"  alt="search again" height="20" width="20"></a>
+			</div>
+		{% else %}
+			<div id="publications_search">
+				<label> {{results|length}} results found....</label><a href="/publications"><img src="{% static "img/go_back.png" %}"  alt="search again" height="20" width="20"></a>
+			</div>
+		{% endif %}
+		<div id="main_results_content">
+			{% autopaginate results 6 %}
+		 	{% for result in results %}
+		    	<div class="publication">
+		    		
+		    		<div class="publication_col1_search_results">
+		    			{% if doc_title %}
+		    				<a class="text_1" href={{result.url}}> {{result.title}}</a><hr class="text_2">
+		    			{% else %}
+		    				<a class="text_1" href={{result.url}}> {{result.title}}</a><hr class="text_2">
+		    			{% endif %}
+		    			
+		    			{% if result.co_authors %}
+			    			<label class="publication_det">Co-authors:</label>
+			    			{% for co_author in result.co_authors %}
+			    				{% ifnotequal co_author.profile_url "" %}
+			    					<a class="tag publication_det_2" href="{{co_author.profile_url}}">{{co_author.name}}</a>
+			    				{% else %}
+			    					<a class="tag publication_det_2" > {{co_author.name}}</a>
+			    				{% endifnotequal %}
+								{% if not forloop.last %}
+									,
+								{% endif %}
+			    			{% endfor %}<br>
+			    		{% endif %}
+			    		{% ifnotequal result.date "-" %}
+			    			<label class="publication_det">Publication year: </label>
+			    			{% if ex_year_from %}
+			    				<label style="color:red">{{result.date}}</label>
+			    			{% elif ex_year_to %}
+			    				<label style="color:red">{{result.date}}</label>
+			    			{% else %}
+			    				<label class="publication_det_2">{{result.date}}</label>
+			    			{% endif %}
+			    		{% endifnotequal %}
+			    		
+			    		{% ifnotequal result.citations "-" %}
+			    			{% ifnotequal result.citations 0 %}
+			    				<div><label class="publication_det">Citations:</label>
+			    				{% if max_citations %}
+			    					<a style="color:red" class="citation publication_det_2 citation_clicked">{{result.citations}}</a>
+			    				{% else %}
+			    					<a class="citation publication_det_2 citation_clicked">{{result.citations}}</a>
+			    				{% endif %}
+			    				</div>
+			    				{% if result.publications_cited %}
+				    				<div class="cited_publications_div"> 
+				    					{% for pub in result.publications_cited %}
+				    						<a class="citation" href="{{pub.1}}"> {{pub.0}} </a><br>
+				    					{% endfor %}
+				    				</div>
+				    			{% endif %}
+			    			{% else %}
+			    				<div><label class="publication_det">Citations:</label> <a><label calss="publication_det_2">{{result.citations}}</label></a></div>
+			    			{% endifnotequal %}
+			    		{% endifnotequal %}
+			    		
+			    		{% ifnotequal result.type "-"%}
+			    			<label class="publication_det">Type: </label>
+			    			{% if conference or journal or other or book %}
+			    				<label class="publication_det">: <span style="color:red">{{result.type}} </span></label>
+			    			{% else %}
+			    				<label class="publication_det">Type: <label class="publication_det_2">{{result.type}}</label></label>
+			    			{% endif %}
+			    		{% endifnotequal %}
+			    		
+			    		{% if result.keywords %}
+			    			<p>Keywords:
+			    			{% for keyw in result.keywords %}
+			    				{% if keyword in keyw  %}
+			    					<label  style="color:red">{{keyw}}</label>
+			    				{% elif keyw in all_keywords %}
+			    					<label style="color:red">{{keyw}}</label>
+			    				{% else %}
+			    					<label class="publication_det_2">{{keyw}} </label>
+			    				{% endif %}
+			    				{% if not forloop.last %}
+									,
+								{% endif %}
+			    			{% endfor %}
+			    		{% endif %}
+						</p><br>
+						{% ifnotequal result.venue "-" %}
+			    			<h4 class="publication_det_2">{{result.venue}}</h4>
+			    		{% endifnotequal %} 
+			    	</div>
+			    	{% if result.doi %}
+				    	<div class="publication_col2_search_results">
+				    		<div class='altmetric-embed' data-badge-type='medium-donut' data-badge-popover='left' data-doi={{result.doi}}></div>
+				    	</div>
+			    	{% endif %}
+		    	</div>
+			    {% endfor %}
+			    {% paginate %}
+			
+		</div>
+	</div>
+{% endblock %}

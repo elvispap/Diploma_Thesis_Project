@@ -1,0 +1,61 @@
+{
+  "Nodes": [
+    {
+      "Id": "338",
+      "Name": "Manolis Vavalis",
+      "Url": "http://www.google.com",
+      "Weight":"10"
+    },
+    {
+      "Id": "340",
+      "Name": "TEST NODE TWO",
+      "Url": "http://www.yahoo.com",
+      "Weight":"10"
+    },
+    {
+      "Id": "341",
+      "Name": "TEST NODE THREE",
+      "Url": "http://www.stackoverflow.com",
+      "Weight":"20"
+    },
+    {
+      "Id": "342",
+      "Name": "TEST NODE FOUR",
+      "Url": "http://www.reddit.com",
+      "Weight":"16"
+    },
+    {
+      "Id": "343",
+      "Name": "TEST NODE FOUR",
+      "Url": "http://www.reddit.com",
+      "Weight":"11"
+    }
+  ],
+  "Links": [
+    {
+      "Source": "338",
+      "Target": "338",
+      "Value": "0"
+    },
+    {
+      "Source": "338",
+      "Target": "340",
+      "Value": "0"
+    },
+    {
+      "Source": "338",
+      "Target": "341",
+      "Value": "0"
+    },
+    {
+      "Source": "338",
+      "Target": "342",
+      "Value": "0"
+    },
+      {
+      "Source": "338",
+      "Target": "343",
+      "Value": "0"
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+#header {
+	/*background-color: #0091FF;*/
+	height:100px;
+	background-image: url("../img/fabric_1/fabric_1/fabric_1.png");
+	background-repeat: repeat;
+	/*background-image: url("../img/assault/assault/assault.png");
+	background-repeat: repeat;*/
+	margin-bottom: 0px;
+	border-bottom: 1px dotted;
+	
+
+}
+#header nav{
+	
+	margin-top: 19px;
+}
+#header nav a{
+	text-decoration: none;
+	font-size: 18px;
+	font-weight: lighter;
+	margin: 10px;
+	color: #434342;
+}
+#header nav a:hover{
+	color:grey;
+}
+
+
+#left_side{
+	
+	height:100%;
+	float: left;
+	width:30%;
+
+}
+#left_side_col1{
+	height: 100%;
+	float: left;
+	padding-top: 0px;
+	padding-left: 10px;
+	
+}
+#left_side_col1 img{
+	height: 100%;
+	overflow: hidden;
+	
+	
+}
+#col2{
+	height: 100%;
+	float: left;
+	font-family: 'ChunkFiveRegular';
+  	padding-top: 0px;
+  	/*border: 1px solid red;*/
+  	padding: 10px;
+}
+#part_1{
+	font-size: 22px;
+}
+#part_3{
+	font-size: 20px;
+}
+#left_side img:hover{
+	
+	opacity: 0.8;
+	
+}
+
+#right_side{
+	height:100%;
+	width:65%;
+	float: right;
+	/*border: 1px solid red;*/
+}
+
+#notification_icon {
+	width: 100px;
+	padding: 20px;
+	height: 100%;
+	float: left;
+}
+#notification_icon img:hover {
+	cursor: pointer;
+}
+
+#right_side_con_index {
+   float:right; 
+   margin-right: 20px;
+}

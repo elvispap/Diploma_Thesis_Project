@@ -1,0 +1,131 @@
+{% extends "publications_skeleton.html" %}
+{% load static %}
+{% block title %} Publications {% endblock %}
+
+{% block content %} 
+	<div id="main_content_publications">
+		
+		<div id="publications_search_content">
+			<div id="publication_search_form">
+				<form method="GET" action="/publications/search/" onsubmit="return check_searching()">
+					<!-- <h3> Search for publication(s) </h3> -->
+					<div id="col1">
+						<h4>Document title:</h4>
+						<div class="search_box">
+							<input type="text" class="search"  name="doc_title" placeholder="Document's title..." size="58">
+					    </div><br>
+					    <h4>Document's keywords:</h4>
+						<div class="search_box">
+							<div>
+					            <ul id="keywordsTags"></ul>
+					        </div>
+					        <input type="hidden" name="keywords" id="keywords_input"></input>
+					    </div><br>
+					    <h4>Document's authors:</h4>
+						<div class="search_box">
+							<div>
+					            <ul id="authorsTags"></ul>
+					        </div>
+					        <input type="hidden" name="authors" id="authors_input"></input>
+					    </div><br>
+					    <div id="keywords">
+					 		{% if keywords %}		
+							<ul id="keywords_ul">
+								{% for keyword in keywords %}
+									<li> {{keyword.keyword}} </li>
+								{% endfor %}
+							</ul>
+							{% endif %}
+						</div>
+						<div id="authors_div">
+					 		{% if authors %}		
+							<ul id="authors_ul">
+								{% for author in authors %}
+									<li> {{author.name}} </li>
+								{% endfor %}
+							</ul>
+							{% endif %}
+						</div>
+					</div>	<!-- End col1 -->
+					<div id="col2">
+						<div id="doc_type_citations_div">
+							<div id="doc_type_div">
+								<h4 >Documnent type:</h4>
+								<div class="search_box" >
+									<select name="doc_type">
+										<option id="none" selected="selected"></option>
+										<option id="type_conf" value="Conference">Conference</option>
+									  	<option id="type_jour" value="Journal">Journal</option>
+									  	<option id="type_book" value="Book">Book</option>
+									  	<option id="type_other" value="Other">Other</option>
+									</select>
+								</div>
+							</div>
+							<div id="cit_div">
+								<h4 >Number of citations:</h4>
+								(between 0 and {{max_citations}}):
+	  							<input type="number" name="number_of_citations" min="0" max="{{max_citations}}">
+							</div>
+						</div>
+					    </br>
+						<h4> Published:</h4>
+						<div class="search_box">
+						    
+						    <label >From:</label>
+
+					    	<select name="doc_year_from" id="doc_year_from">
+					    		
+		                    </select>
+		                    <label  for="doc_year_to">To:</label>
+					    	<select name="doc_year_to" id="doc_year_to">
+					    		
+		                    </select>
+						</div> 
+					</div>	<!-- End col2 -->
+					
+				 	<div id="form_actions_div">
+					    <div id="form-actions">
+					    	<button type="submit" class="f_button"> Search </button>
+					    	<button type="reset" id="reset" class="f_button"> Reset </button>
+					    </div>
+					</div>
+					
+				</form>
+			</div>
+		</div>
+		<div id="ranking_div">
+			<div class="rarking_col1">
+				<p>Top publications : </p>
+				<div id="top_publications">
+					
+					{% for publication in top_publications %}
+						<li> <a href="{{publication.pub_url}}"> {{publication.pub_title}}  </a> with <span class="size2"> {{publication.pub_citations}} </span>citations </li>
+						
+					{% endfor %}
+				</div>
+			</div>
+			<div class="rarking_col2">
+				<p>Top keywords : </p>
+				<div id="top_keywords">
+					{% for keyw in top_keywords %}
+						<a href="keywords/{{ keyw.keyword.split|join:"_" }}" data-title="Used {{keyw.freq}} times" class="tag keyw_size-{{forloop.counter}} target"> {{keyw.keyword}} </a>
+						
+					{% endfor %}
+				</div>
+			</div>
+			<!--<div class="rarking_col3">
+				<p>Top authors : </p>
+				<div id="top_authors">
+					
+					{% for publication in top_publications %}
+						<li> <a href="{{publication.pub_url}}"> {{publication.pub_title}}  </a> with <span class="size2"> {{publication.pub_citations}} </span>citations </li>
+						
+					{% endfor %}
+					<li> <a> Leandros Tassiulas with <label> 300</label> citations</a></li>
+					<li> <a> Manolis Vavalis with <label> 300</label> citations</a></li>
+					<li> <a> Dimitrios Katsaros with <label> 300</label> citations</a></li>
+					<li> <a> Elias Houstis with <label> 300</label> citations</a></li>
+				</div>
+			</div> -->
+		</div>
+{% endblock %}

@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+{% load static %}
+
+<html lang="en">
+<head>
+	<title>Welcome</title>
+	<link rel="shortcut icon" href="http://www.iconj.com/ico/i/b/ib3f1ddfa2.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="{% static "css/index.css" %}" /> <!-- CSS -->
+    <link rel="stylesheet" href="{% static "css/lib/animate.css" %}" /> <!-- CSS -->
+    
+    <link rel="stylesheet" href="{% static "css/header.css" %}" /> 
+   	<link rel="stylesheet" href="{% static "css/external.css" %}" /> 
+    <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+   	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+   	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBvghp-Ik4_th4dDdRBLXBbs_zzpcsckdU&sensor=false"> </script>
+   <!-- <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script> -->
+
+    
+  	<script type="text/javascript" src="{% static "js/index.js" %}" ></script>
+  	<script type="text/javascript" src="{% static "js/lib/sessvars.js" %}" ></script>
+
+  	<!--<script type="text/javascript" src="{% static "js/lib/jquery.textillate.js" %}"></script> -->
+  	<!--<script type="text/javascript" src="{% static "js/lib/lettering.js" %}"></script> -->
+  	<!-- <script type="text/javascript" src="{% static "js/lib/jquery.slimscroll.min.js" %}"></script> -->
+  	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  	<script type="text/javascript" src="{% static "js/lib/countries_gmap.js" %}" ></script>
+  	
+  	<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+  	
+	<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+	<!--<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/d3/3.3.10/d3.min.js"></script> -->
+  	
+  	<script src="http://code.highcharts.com/highcharts.js"></script>
+	<script src="http://code.highcharts.com/modules/exporting.js"></script>
+
+	
+	<script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/src/infobox.js"></script>
+	<script type="text/javascript" src="{% static "js/lib/markerclusterer.js" %}" ></script>
+
+	<script type='text/javascript' src='https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js'></script>
+	<script type="text/javascript" src="{% static "js/lib/jquery.shCircleLoader-min.js" %}"></script>
+  	<script type="text/javascript" src="../static/js/lib/jquery.approach.min.js"></script>
+  	
+    
+	
+</head>
+<body>
+
+<div id="content_index">
+	{% include "header.html" %}
+	<div id="metrics">
+		<div id="metrics_numbers"> 
+			<div id="number_of_publications" class="data_entry">
+				<a href="/publications" > <span class="data_number">{{ total_publications }} </span> <br> <span class="data_label">publications </span></a> 
+			</div>
+			<div class="data_entry">
+				<a href="/citations"> <span class="data_number">{{ total_citations }} </span><br> <span class="data_label">citations </span></a> 
+			</div>
+			<div id='affiliationsBtn_show' class="data_entry">
+				<a class="pointer"> <span class="data_number">{{ affiliations | length }} </span> <br><span class="data_label">collaborations</span></a> 
+			</div>
+			<div id="total_countriesBTN" class="data_entry">
+				<a> <span class="data_number">{{total_countries}} </span><br> <span class="data_label"> countries </span></a>
+			</div>
+			<div id="main_areasBTN" class="data_entry">
+				<a> <span class="data_number">{{subject_areas}} </span> <br> <span class="data_label">research areas </span></a>
+			</div>
+	</div> 
+	
+	<div id="total_counties_box"></div>
+	<div id="subject_areas_box"></div>
+	<script type="text/javascript" src="{% static "js/lib/collapse_tree.js" %}" ></script> <br>
+	<div id="container_affiliations_index"> 
+		<div id="affiliations_col">
+	 		<div id="row1" >
+	 			<div id="search_div">
+	 				<input type="text" id="search_affiliation" class="search_div" placeholder="Search here..." size="35">
+  				</div> 
+  				<div id="show_hide_bnts">
+		 			<img class="pointer show_hide_btn" id="hide_affiliations_col" src="{% static "img/left_arrow.png" %}" alt="hide affiliations" height="20" width="20"> 
+		 			<img class="pointer show_hide_btn" id="show_affiliations_col" src="{% static "img/right_arrow.png" %}" alt="hide affiliations" height="20" width="20"> 
+		 		</div>
+	 		</div>
+	 		<div id="affiliations" class="scrolling">
+		 		{% if affiliations %}		
+				<ul id="affiliations_ul">
+					{% for affiliation in affiliations %}
+						<li> <a class="affiliation pointer" id="{{affiliation.affiliation_location}}">{{affiliation.affiliation_name}}</a></li>
+					{% endfor %}
+				</ul>
+				{% endif %}
+			</div>
+	 	</div>
+	 	<div id="map_col" ></div>
+	</div>
+	<div id="search_publication_keyword_div"> 
+			<form id="search_by_keyword_form" action="/search_by_keyword/" method="GET"> 
+				<input type="text" id="search_publication_keyword" name="keyword_to_search" class="search_div_2" placeholder="Search by keyword..." size="70">
+				<img id="search_by_keyword_icon" src="{% static "img/search_icon.png" %}" alt="hide affiliations" height="23" width="28">
+			</form>
+			 
+	</div><br>
+	<span id="search_message"> </span>
+	<div id="search_for_keyword_div">
+ 		{% if keywords %}		
+		<ul id="keywords_ul">
+			{% for keyw in keywords %}
+				<li> <a class="keyword pointer" href="#">{{keyw.keyword}}</a></li>
+			{% endfor %}
+		</ul>
+		{% endif %}
+	</div>
+	
+	
+	
+	<br><br>
+	<div id="container_citations_doc_types">
+		
+	 	<div id="container_citations_div">
+ 			<div id="container_citations_options">
+ 				<input name="radio_button" id="type_cum" value="TRUE" type="radio"  checked >Cumulative</input>
+				<input name="radio_button" id="type_ann" type="radio">Annual</input>
+ 			</div>
+			<div id="container_citations"></div>
+		</div>
+		<div id="container_doc_types"> </div>
+	</div>
+
+	
+
+</div> 
+{% include "footer.html" %}
+
+
+</body>
+
+</html>

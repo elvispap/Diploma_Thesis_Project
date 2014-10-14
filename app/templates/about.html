@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+{% load static %}
+
+<html lang="en">
+<head>
+	<title>About</title>
+	<link rel="shortcut icon" href="http://www.iconj.com/ico/i/b/ib3f1ddfa2.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="{% static "css/index.css" %}" /> <!-- CSS -->
+    <link rel="stylesheet" href="{% static "css/header.css" %}" /> 
+    <link rel="stylesheet" href="{% static "css/external.css" %}" /> 
+    
+
+    <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="{% static "js/menu.js" %}" ></script>
+</head>
+<body>
+	
+<div id="content">
+	{% if department %}
+		{% include "header.html" %}
+	{% else %}
+		{% include "header_2.html" %}
+	{% endif %}
+	<div id="about_content">
+		<p> Welcome to University of Thessaly.This system was developed as part of my diploma thesis project. This is a scientific research system for the management and monitoring of the University of Thessaly's research activities. Through this system, every department of the University will be able to access valuable information about its research activities. This information represents the scientific profile of each department, its scientific productivity, its evolution and its collaborations with other universities, institutions and researchers around the world. Also, we developed our system with a way that can visualize the above information with an intelligent and effective way adapted to the background and the interests of every viewer. Finally,all information you see here is been collected in real time through web crawling and then visualized with the best data visualization techniques. </p>
+		<p> For everything you want to ask me, just feel free to contact me at <label>yannt.secret@gmail.com.</label> </p>
+		<p id="project_copyright"> CC, University of Thessaly, 2014  </p>
+
+	</div>
+
+	{% include "footer.html" %}
+</div> 
+
+	
+
+</body>
+
+</html>
