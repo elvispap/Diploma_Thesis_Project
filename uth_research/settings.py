@@ -30,13 +30,6 @@ SECRET_KEY = '9k#uy^5e85z%+7$l08$)=#rhdzbud*vp=f)1nqixn%p#q634xb'
 DEBUG = False
 TEMPLATE_DEBUG = False
 
-# TEMPLATE_DIRS = (
-# 	TEMPLATE_PATH,
-# )
-# TEMPLATE_DIRS = (
-#     "C:/Users/Elvis/Desktop/Diplwmatikh/uth_research/uth_research/templates",
-# )
-
 TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates').replace('\\','/'),
 )
@@ -87,7 +80,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'uth_research_db',
         'USER': 'root', 
-        'PASSWORD': '',
+        'PASSWORD': '********',
         'HOST': 'localhost',
         'PORT': '',
     },
@@ -95,9 +88,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'uth_research_central_db',
         'USER': 'root', 
-        'PASSWORD': '',         # must change
-        'HOST': 'localhost',        # must change
-        'PORT': '',             # must change
+        'PASSWORD': '********',        
+        'HOST': 'localhost',        
+        'PORT': '',            
     }
 }
 # Internationalization
@@ -119,11 +112,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# STATICFILES_DIRS = (
-#     STATIC_PATH,
-# )
 STATICFILES_DIRS = (
-    #"C:/Users/Elvis/Desktop/Diplwmatikh/uth_research/uth_research/static",
+   
     os.path.join(os.path.dirname(__file__), 'static'),
   
 )
