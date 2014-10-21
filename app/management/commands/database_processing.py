@@ -9,7 +9,7 @@ import math
 from functools import wraps
 import uth_home_page 
 
-connection = MySQLdb.connect(host="localhost",user="root",passwd="",db="uth_research_db")
+connection = MySQLdb.connect(host="localhost",user="root",passwd="********",db="uth_research_db")
 connection.set_character_set('utf8')
 x = connection.cursor()
 
