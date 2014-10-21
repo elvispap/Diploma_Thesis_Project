@@ -7,7 +7,7 @@ import base64
 import database_processing
 
 
-connection = MySQLdb.connect(host="localhost",user="root",passwd="",db="uth_research_db")
+connection = MySQLdb.connect(host="localhost",user="root",passwd="********",db="uth_research_db")
 connection.set_character_set('utf8')
 x = connection.cursor()
 x.execute('SET GLOBAL connect_timeout=1000')
@@ -18,18 +18,18 @@ x.execute('SET character_set_connection=utf8;')
 
 def start_crawling(author):
 
-    # print "-----------------------FROM SCOPUS %s -----------------------" % author
-    # authorID = find_authorID(author,"scopus")
+    print "-----------------------FROM SCOPUS %s -----------------------" % author
+    authorID = find_authorID(author,"scopus")
    
     
-    # if authorID == None or authorID == "":
-    #     print "No results from Scopus"
-    # else:
-    #     results_from_scopus = scopus.start_crawling(author,authorID)
-    #     if results_from_scopus == None:
-    #         print "No results"
-    #     else:
-    #         database_processing.start_processing(results_from_scopus,"scopus",author)
+    if authorID == None or authorID == "":
+         print "No results from Scopus"
+     else:
+         results_from_scopus = scopus.start_crawling(author,authorID)
+         if results_from_scopus == None:
+             print "No results"
+         else:
+             database_processing.start_processing(results_from_scopus,"scopus",author)
     
     
    
