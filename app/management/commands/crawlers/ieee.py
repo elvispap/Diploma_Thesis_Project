@@ -299,7 +299,7 @@ def get_soup(author,page):
 def check_database(title,citations,author_name):
     """ Check the database if the current publication exists. If not, we check if its citations have changed and if yes,udpate the DB """
     try:
-        connection = MySQLdb.connect(host="localhost",user="root",passwd="",db="uth_research_db")
+        connection = MySQLdb.connect(host="localhost",user="root",passwd="********",db="uth_research_db")
         connection.set_character_set('utf8')
         cur = connection.cursor()
       
