@@ -8,7 +8,7 @@ import urlparse
 import math
 from functools import wraps
 
-connection = MySQLdb.connect(host="localhost",user="root",passwd="",db="uth_research_central_db")
+connection = MySQLdb.connect(host="localhost",user="root",passwd="********",db="uth_research_central_db")
 connection.set_character_set('utf8')
 x = connection.cursor()
 
