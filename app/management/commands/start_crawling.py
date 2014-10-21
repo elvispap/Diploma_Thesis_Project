@@ -15,7 +15,7 @@ class Command(NoArgsCommand):
 
     def handle_noargs(self, **options):
 
-        connection = MySQLdb.connect(host="localhost",user="root",passwd="",db="uth_research_db")
+        connection = MySQLdb.connect(host="localhost",user="root",passwd="********",db="uth_research_db")
         connection.set_character_set('utf8')
         x = connection.cursor()
         x.execute('SET GLOBAL connect_timeout=1000')
