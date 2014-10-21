@@ -193,7 +193,7 @@ if __name__ == '__main__':
 
    
 
-    connection = MySQLdb.connect(host="localhost",user="root",passwd="",db="uth_research_central_db")
+    connection = MySQLdb.connect(host="localhost",user="root",passwd="********",db="uth_research_central_db")
     connection.set_character_set('utf8')
     x = connection.cursor()
 
