@@ -42,8 +42,6 @@ class author(models.Model):
     microsoftID = models.CharField(max_length=100,blank=True)
     ieee = models.CharField(max_length=100,blank=True)
 
-    
-
     def __unicode__(self):
         return u'%s' % (self.name)
 
@@ -92,7 +90,6 @@ class keyword(models.Model):
 class keyword_publication(models.Model):
     publication = models.ForeignKey(publication)
     keyword = models.ForeignKey(keyword,db_index = True)
-
 
 class publication_publication_cited(models.Model):
     publication = models.ForeignKey(publication)
