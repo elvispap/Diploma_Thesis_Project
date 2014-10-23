@@ -15,137 +15,11 @@ import difflib
 import MySQLdb
 from django.contrib.staticfiles import finders
 
+not_rest_affs = ["Thessaly","thessaly","volos","Volos"]   # global 
 
-def find_affiliations(not_rest_affs,src):
+def central_page(request):    
 
-    affiliations = []
-    all_affiliations = []
-    
-    all_entries = affiliation.objects.all()
-    for entry in all_entries:
-       
-        affiliation_location = entry.affiliation_location
-
-        if affiliation_location == "":
-            continue
-        
-        affil = {}
-        affiliation_name = entry.affiliation_name
-        affiliation_id = entry.id    
-        #and check_affs(affiliation_name,not_rest_affs) 
-        if affiliation_name not in affiliations and affiliation_name != "" and check_affs(affiliation_name,not_rest_affs):#and not check_for_dublicates(affiliation_name,affiliations):
-           
-            #aff = affiliation.objects.get(affiliation_name = affiliation_name)
-            affiliations.append(affiliation_name)
-            affiliation_weight = co_author_affiliation.objects.filter(affiliation_id = affiliation_id)
-            if len(affiliation_weight) == 0:
-                continue
-            if src == "access_db":
-                affil["affiliation_name"] = affiliation_name
-            else:
-                affil["weight"] = len(affiliation_weight)
-                affil["affiliation_name"] = affiliation_name
-            affil["affiliation_location"] = affiliation_location
-            affil["affiliation_id"] = affiliation_id
-            
-        else:
-            continue  
-        all_affiliations.append(affil)
-    if src == "access_db":
-        data = sorted(all_affiliations, key=lambda k: k['affiliation_name'],reverse=True)
-        return data
-    else:
-        data = sorted(all_affiliations, key=lambda k: k['weight'],reverse=True)
-        new_data = []
-        for item in data:
-            affil_new = {}
-            aff_weight =  item["weight"]
-            aff_name = item["affiliation_name"]
-            aff_location = item["affiliation_location"]
-            aff_id = item["affiliation_id"]
-            affil_new["affiliation_name"] = "("+str(aff_weight)+")" + aff_name
-            affil_new["affiliation_location"] = aff_location
-            affil_new["affiliation_id"] = aff_id
-            new_data.append(affil_new) 
-
-        return new_data
-
-def find_affiliations_central_page(not_rest_affs):
-
-    affiliations = []
-    all_affiliations = []
-    
-    all_entries = affiliation.objects.all()
-    for entry in all_entries:
-       
-        affiliation_location = entry.affiliation_location
-
-        if affiliation_location == "":
-            continue
-        
-        affil = {}
-        affiliation_name = entry.affiliation_name
-        affiliation_id = entry.id    
-        #and check_affs(affiliation_name,not_rest_affs) 
-        if affiliation_name not in affiliations and affiliation_name != "" and check_affs(affiliation_name,not_rest_affs):#and not check_for_dublicates(affiliation_name,affiliations):
-           
-            #aff = affiliation.objects.get(affiliation_name = affiliation_name)
-            affiliations.append(affiliation_name)
-            affiliation_weight = co_author_affiliation.objects.filter(affiliation_id = affiliation_id)
-            if len(affiliation_weight) == 0:
-                continue
-            if src == "access_db":
-                affil["affiliation_name"] = affiliation_name
-            else:
-                affil["weight"] = len(affiliation_weight)
-                affil["affiliation_name"] = affiliation_name
-            affil["affiliation_location"] = affiliation_location
-            affil["affiliation_id"] = affiliation_id
-            
-        else:
-            continue  
-        all_affiliations.append(affil)
-    
-        data = sorted(all_affiliations, key=lambda k: k['affiliation_name'],reverse=True)
-        return data
-    
-   
-def check_for_dublicates(aff,aff_list):
-
-    a = aff.lower()
-    if "university" in a:
-        a = a.replace("university","")
-
-    a_split = a.split(" ")
-    a_max = max(a_split, key=len)
-
-    seq2_lower = [x.lower() for x in aff_list]
-
-    for element in seq2_lower:
-        element_split = element.split(" ")
-        element_max = max(element_split, key=len)
-        if element_max in a_split or a_max in element:
-            return True
-    
-    for element in seq2_lower:
-        if difflib.SequenceMatcher(None, element, a).ratio() > 0.75:
-            return True
-    return False
-
-def check_affs(affiliation,affiliations):
-
-    affiliation_parts = affiliation.replace(",", "")
-    all_parts = affiliation_parts.split()
-    for part in all_parts:
-        if part in affiliations:
-            return False
-        
-    return True
-
-
-def central_page(request):         # ONLY CENTRAL PAGE EDITION
-
-    connection = MySQLdb.connect(host="localhost",user="root",passwd="",db="uth_research_central_db")
+    connection = MySQLdb.connect(host="localhost",user="root",passwd="******",db="uth_research_central_db")
     connection.set_character_set('utf8')
     cur = connection.cursor()
 
@@ -192,8 +66,6 @@ def central_page(request):         # ONLY CENTRAL PAGE EDITION
     for sub_a in all_sub_a:
         all_subject_araes.append(sub_a[1])
     
-    not_rest_affs = ["Thessaly","thessaly","volos","Volos"]     # must be dynamic
-  
     departements = []
     query = "SELECT * FROM app_departments"
     cur.execute(query)
@@ -207,7 +79,6 @@ def central_page(request):         # ONLY CENTRAL PAGE EDITION
             d["total_citations"] = eece_total_citations
             d["logo"] = dep[1].lower().replace(" ","_")
             d["url"] = "eece"
-
         elif dep[1] == "Mechanical Engineering":
             d["total_publications"] = me_total_publications
             d["total_citations"] = me_total_citations
@@ -230,7 +101,6 @@ def central_page(request):         # ONLY CENTRAL PAGE EDITION
             d["url"] = "#"
 
         departements.append(d)
-        not_rest_affs = ["Thessaly","thessaly","volos","Volos"]     # must be dynamic
         all_affiliations = find_affiliations(not_rest_affs,"null")
         query = "SELECT DISTINCT(affiliation_country) AS affiliation_country FROM app_affiliation ORDER BY affiliation_country DESC"
         cur.execute(query)
@@ -241,10 +111,9 @@ def central_page(request):         # ONLY CENTRAL PAGE EDITION
 def home(request):
 
     total_publications = publication.objects.count()
-   
     all_subject_areas = subject_area.objects.count()
     total_keywords = keyword.objects.all()
-    not_rest_affs = ["Thessaly","thessaly","volos","Volos"]     # must be dynamic
+     
     all_affiliations = find_affiliations(not_rest_affs,"null")
     total_countries = affiliation.objects.values_list("affiliation_country").distinct()
     total_citations = publication.objects.aggregate(Sum('pub_citations'))["pub_citations__sum"]
@@ -273,7 +142,7 @@ def home_search_by_keyword(request):
         # find the publication's keywords
         pub_keywords = []
         all_pubs = keyword_publication.objects.filter(publication_id = pub_id)
-        for pub in all_pubs:                            # loop through all publications's keywords ids
+        for pub in all_pubs:            # loop through all publications's keywords ids
             pub_keyw_id = keyword.objects.get(id = pub.keyword_id)
             if pub_keyw_id.keyword not in pub_keywords:
                 pub_keywords.append(pub_keyw_id.keyword)
@@ -317,7 +186,8 @@ def home_search_by_keyword(request):
         publication_dict["citations"] = p.pub_citations
         publication_dict["keywords"] = pub_keywords
         publication_dict["co_authors"] = pub_co_authors
-        ########################################################################################
+        
+        # find the cited publicatiokns
         pubs_cited = publication_publication_cited.objects.filter(publication_id = pub_id)
         cited_doc = []
         all_cited_pub_ids = []
@@ -327,15 +197,14 @@ def home_search_by_keyword(request):
                 doc = publication_cited.objects.get(id = pub.publication_cited_id)
                 cited_doc.append([doc.pub_title,doc.pub_url])
         publication_dict["publications_cited"] = cited_doc
-        ########################################################################################
+        
         data_to_return.append(publication_dict) 
 
-    sorted_data = sorted(data_to_return, key=lambda k: k['date'],reverse=True) 
+    sorted_data = sorted(data_to_return, key=lambda k: k['date'],reverse=True)      # sort our data by date
     return render(request, 'publications_search_results.html',{'results':sorted_data,'keyword':keyw.strip(),'home_search_by_keyword':True})
     
 def publications(request):
 
-    
     all_keyws_ids = []
     keyws_ids = []
     keywords = []
@@ -347,12 +216,11 @@ def publications(request):
     top_publications = publication.objects.order_by('-pub_citations')
     all_keywords = keyword.objects.all()
     
-
     return render(request, 'publications.html',{'top_publications':top_publications[0:5],'keywords':all_keywords,'top_keywords':top_keywords,'authors':all_authors,'max_citations':top_publications[0].pub_citations})
 
-def all_publications(request):      # ONLY CENTRAL PAGE EDITION
+def all_publications(request):  
    
-    connection = MySQLdb.connect(host="localhost",user="root",passwd="",db="uth_research_central_db")
+    connection = MySQLdb.connect(host="localhost",user="root",passwd="******",db="uth_research_central_db")
     connection.set_character_set('utf8')
     cur = connection.cursor()
 
@@ -376,17 +244,11 @@ def all_publications(request):      # ONLY CENTRAL PAGE EDITION
         results.append(publication_dict) 
 
     data = sorted(results, key=lambda k: k['date'],reverse=True) 
-    return render(request, 'all_publications.html',{'results':data})
-   
-def citations(request):
-
-    all_citations = publication_cited.objects.all()
+    return render(request, 'all_publications.html',{'results':data})    # sort our data by date
     
-    return render(request, 'citations.html',{'citations':all_citations})
+def all_citations(request):    
 
-def all_citations(request):     # ONLY CENTRAL EDITION 
-
-    connection = MySQLdb.connect(host="localhost",user="root",passwd="",db="uth_research_central_db")
+    connection = MySQLdb.connect(host="localhost",user="root",passwd="******",db="uth_research_central_db")
     connection.set_character_set('utf8')
     cur = connection.cursor()
 
@@ -401,31 +263,16 @@ def all_citations(request):     # ONLY CENTRAL EDITION
         p["pub_url"] = pub[2]
         all_citations.append(p)
     return render(request, 'all_citations.html',{'citations':all_citations})
+   
+def citations(request):
+
+    all_citations = publication_cited.objects.all()
+    return render(request, 'citations.html',{'citations':all_citations})
 
 def collaborations(request):
 
-    not_rest_affs = ["Thessaly","thessaly","volos","Volos"]     # must be dynamic
     all_affiliations = find_affiliations(not_rest_affs,"null")
-    
     return render(request, 'collaborations.html',{'affiliations':all_affiliations})
-
-def find_common_elements(list1,list2):
-    """ Find the common elements from list1 and list2 """
-
-    if not list1:
-        return list2
-    elif not list2:
-        return list1
-    else:
-        return set(list1) & set(list2)
-
-def check_if_exists(author_name):
-    """  Find if exists an author with the given name """
-    try:
-        result = author.objects.get(name = author_name)
-        return True
-    except author.DoesNotExist:
-        return False
 
 
 def publications_search(request):
@@ -619,7 +466,7 @@ def publications_search(request):
                 publication_dict["citations"] = pub.pub_citations
                 publication_dict["keywords"] = pub_keywords
                 publication_dict["co_authors"] = pub_co_authors
-                ########################################################################################
+                
                 pubs_cited = publication_publication_cited.objects.filter(publication_id = pub_id)
                 cited_doc = []
                 all_cited_pub_ids = []
@@ -629,7 +476,7 @@ def publications_search(request):
                         doc = publication_cited.objects.get(id = pub.publication_cited_id)
                         cited_doc.append([doc.pub_title,doc.pub_url])
                 publication_dict["publications_cited"] = cited_doc
-                ########################################################################################
+               
                 results.append(publication_dict) 
 
      
@@ -658,14 +505,6 @@ def authors(request):
             pub = publication.objects.get(id = each_publication.publication_id)
             citations = citations + pub.pub_citations
 
-            #find the co authors
-            # all_co_authors = publication_co_author.objects.filter(publication_id = each_publication.publication_id)
-            # for a in all_co_authors:
-            #     co_author_entry = co_author.objects.get(id = a.co_author_id)
-            #     co_author_name = co_author_entry.name.replace(",","")
-            #     if co_author_name not in pub_co_authors:
-            #         pub_co_authors.append(co_author_name)
-                
         author_dict["name"] = author_name
         author_dict["total_publications"] = len(total_publications)
         author_dict["total_citations"] = citations
@@ -682,11 +521,6 @@ def authors(request):
     #all_publications = publication.objects.count()
     return render(request, 'authors.html',{'authors':sorted_data})
 
-def my_custom_404_view(request):
-    return render(request, 'error_404.html')
-
-def my_custom_500_view(request):
-    return render(request, 'error_500.html')
 
 def publications_keyword(request,keyWord):
     
@@ -751,7 +585,7 @@ def publications_keyword(request,keyWord):
         publication_dict["citations"] = p.pub_citations
         publication_dict["keywords"] = pub_keywords
         publication_dict["co_authors"] = pub_co_authors
-        ########################################################################################
+       
         pubs_cited = publication_publication_cited.objects.filter(publication_id = pub_id)
         cited_doc = []
         all_cited_pub_ids = []
@@ -761,7 +595,7 @@ def publications_keyword(request,keyWord):
                 doc = publication_cited.objects.get(id = pub.publication_cited_id)
                 cited_doc.append([doc.pub_title,doc.pub_url])
         publication_dict["publications_cited"] = cited_doc
-        ########################################################################################
+       
         data_to_return.append(publication_dict) 
 
     sorted_data = sorted(data_to_return, key=lambda k: k['date'],reverse=True) 
@@ -842,7 +676,7 @@ def author_publications_keyword(request,authorName,keyWord):
                 publication_dict["citations"] = p.pub_citations
                 publication_dict["keywords"] = pub_keywords
                 publication_dict["co_authors"] = pub_co_authors
-                ########################################################################################
+                
                 pubs_cited = publication_publication_cited.objects.filter(publication_id = p.id)
                 cited_doc = []
                 all_cited_pub_ids = []
@@ -852,7 +686,7 @@ def author_publications_keyword(request,authorName,keyWord):
                         doc = publication_cited.objects.get(id = pub.publication_cited_id)
                         cited_doc.append([doc.pub_title,doc.pub_url])
                 publication_dict["publications_cited"] = cited_doc
-                ########################################################################################
+                
                 data_to_return.append(publication_dict) 
 
     sorted_data = sorted(data_to_return, key=lambda k: k['date'],reverse=True) 
@@ -958,14 +792,14 @@ def author_profile(request,author_name):
                     author_profile_url = "/authors/"+author_name.replace(" ","_")
                 except co_author.DoesNotExist:
                     continue
-                #####################################################################
+                
                 pub_co_authors_dict = {}
                 if author_name not in pub_co_authors and author_name != authorName:
                     pub_co_authors_dict["name"] = author_name
                     pub_co_authors_dict["profile_url"] = author_profile_url
                     pub_co_authors.append(pub_co_authors_dict)
                 co_author_dict = {}
-                #####################################################################
+                
                 #if co_author_name not in all_authors:
                 if not check_duplicates(author_name,all_authors,authorName):
                     all_authors.append(author_name)
@@ -975,7 +809,7 @@ def author_profile(request,author_name):
                     co_author_dict["affiliation"] = "Electrical and Computer Engineering,University of Thessaly"
                     co_authors.append(co_author_dict)
                 co_authors_names.append(author_name)
-            #########################################################################################
+           
 
             publication_dict["title"] = pub_title
             publication_dict["url"] = pub_url
@@ -987,10 +821,9 @@ def author_profile(request,author_name):
             publication_dict["citations"] = pub_citations
             publication_dict["keywords"] = pub_keywords
             publication_dict["co_authors"] = pub_co_authors
-            ########################################################################################
+           
             pubs_cited = publication_publication_cited.objects.filter(publication_id = pub_id)
             cited_doc = []
-            
             for pub in pubs_cited:
                 
                     doc = publication_cited.objects.get(id = pub.publication_cited_id)
@@ -998,7 +831,7 @@ def author_profile(request,author_name):
                         all_cited_pub_ids.append(doc.pub_title)
                         cited_doc.append([doc.pub_title,doc.pub_url])
             publication_dict["publications_cited"] = cited_doc
-            ########################################################################################
+            
             publications.append(publication_dict)  
             pub_keywords = []      
         # end for loop     
@@ -1048,16 +881,17 @@ def about(request):
 
     return render(request,'about.html',{'department':True})
 
-def about_2(request):       # CENTRAL PAGE EDITION
+def about_2(request):  
     
     return render(request,'about.html',{'department':False})
 
 def access_db(request):
+    
     if request.method == "GET":
         if request.GET['action'] == "access_db_publications":
             all_dates = []
             data_to_return = []
-            min_date = 2000 # MUST BE DYNAMIC
+            min_date = 2000 
             if request.GET['source'] == "index":
                 all_entries = publication.objects.all()
 
@@ -1085,7 +919,6 @@ def access_db(request):
                         publications_dict[pub.pub_date] = 0
 
 
-                #########################################################################
                 for entry in all_entries:
                     pub = publication.objects.get(id = entry.publication_id)
                     pub_date = pub.pub_date
@@ -1102,26 +935,20 @@ def access_db(request):
 
                 sorted_data = sorted(data_to_return, key=lambda k: k['pub']) 
 
-                #########################################################################
-                
-            
-           
+             
             return HttpResponse(json.dumps(sorted_data), content_type='application/json')
 
         elif request.GET['action'] == "access_db_affiliations":
             
-            not_rest_affs = ["Thessaly","thessaly","volos","Volos"]     # must be dynamic
             return HttpResponse(json.dumps(find_affiliations(not_rest_affs,"access_db")), content_type='application/json')
 
         elif request.GET['action'] == "access_db_affiliations_central_page":    # ONLY CENTRAL PAGE EDITION
             
-            not_rest_affs = ["Thessaly","thessaly","volos","Volos"]     # must be dynamic
-            #return HttpResponse(json.dumps(find_affiliations_central_page(not_rest_affs)), content_type='application/json')
-            return HttpResponse(json.dumps(find_affiliations(not_rest_affs,"access_db")), content_type='application/json')
+           return HttpResponse(json.dumps(find_affiliations(not_rest_affs,"access_db")), content_type='application/json')
 
         elif request.GET['action'] == "access_db_marker_content_central_page":
 
-            connection = MySQLdb.connect(host="localhost",user="root",passwd="",db="uth_research_central_db")
+            connection = MySQLdb.connect(host="localhost",user="root",passwd="******",db="uth_research_central_db")
             connection.set_character_set('utf8')
             cur = connection.cursor()
 
@@ -1129,8 +956,7 @@ def access_db(request):
             affiliations = []
             affiliations_ids = []
             data_to_return = []
-            not_rest_affs = ["Thessaly","thessaly","volos","Volos"]     # must be dynamic
-
+            
             query = "SELECT * FROM app_affiliation WHERE id = %s"
             cur.execute(query,[affiliation_id])
             aff = cur.fetchall()
@@ -1161,8 +987,7 @@ def access_db(request):
             affiliations = []
             affiliations_ids = []
             data_to_return = []
-            not_rest_affs = ["Thessaly","thessaly","volos","Volos"]     # must be dynamic
-
+        
             aff = affiliation.objects.get(id = affiliation_id)
             
             #affiliation_id = entry.id
@@ -1187,7 +1012,6 @@ def access_db(request):
                     co_authors_name_dict["profile_url"] = co_author_profile_url
                     out_co_authors.append(co_authors_name_dict)
                 
-
                 #find all the publications which the authors are connected
                 pubs_ids = []
                 co_authors_pubs = publication_co_author.objects.filter(co_author_id = co_author_id)
@@ -1195,8 +1019,7 @@ def access_db(request):
                     if co_author_pub.publication_id not in pubs_ids:
                         pubs_ids.append(co_author_pub.publication_id)
 
-
-                #find all the collaborated authors
+                 #find all the collaborated authors
                 entries_co_authors = co_author_author.objects.filter(co_author_id = co_author_id)
                 dep_collaborated_authors = []   # the authors of our university
                 pub_entry = {}
@@ -1235,6 +1058,7 @@ def access_db(request):
                 data_to_return.append(affil)
 
             return HttpResponse(json.dumps(data_to_return), content_type='application/json')
+            
         elif request.GET['action'] == "access_db_publications_doc_types_author_1":
 
             publications_type = []
@@ -1292,9 +1116,6 @@ def access_db(request):
             if  data != 0:
                 publications_type.append(type_other)
 
-            
-            # data_to_return = []
-            # data_to_return.append(publications_type)
             return HttpResponse(json.dumps(publications_type), content_type='application/json')
 
         elif request.GET['action'] == "access_db_publications_doc_types_author_2":
@@ -1379,7 +1200,7 @@ def access_db(request):
                     pub_date = pub.pub_date
                     if pub_date in all_dates:
                         pub_citations = pub.pub_citations
-                        publication_citations[pub_date]+=pub_citations      # update the frequnecy 
+                        publication_citations[pub_date]+=pub_citations  # update the frequnecy 
                 
 
                 # insert the  dicrionary's data into a data_to_return list 
@@ -1391,8 +1212,8 @@ def access_db(request):
                 sorted_data = sorted(data_to_return, key=lambda k: k['pub'])
                 return HttpResponse(json.dumps(sorted_data), content_type='application/json') 
 
-            elif request.GET['source'] == 'central':    # ONLY CENTRAL EDITION
-                connection = MySQLdb.connect(host="localhost",user="root",passwd="",db="uth_research_central_db")
+            elif request.GET['source'] == 'central':    
+                connection = MySQLdb.connect(host="localhost",user="root",passwd="******",db="uth_research_central_db")
                 connection.set_character_set('utf8')
                 cur = connection.cursor()
                 now = datetime.datetime.now()
@@ -1429,6 +1250,7 @@ def access_db(request):
             
       
         elif request.GET['action'] == "access_db_publications_doc_types_index":
+            
             if request.GET['source'] == 'index':
                 now = datetime.datetime.now()
                 min_date = 2000
@@ -1468,9 +1290,9 @@ def access_db(request):
 
                 return HttpResponse(json.dumps(all_data), content_type='application/json')
 
-            elif request.GET['source'] == 'central':    # ONLY CENTRAL EDITION
+            elif request.GET['source'] == 'central':  
 
-                connection = MySQLdb.connect(host="localhost",user="root",passwd="",db="uth_research_central_db")
+                connection = MySQLdb.connect(host="localhost",user="root",passwd="******",db="uth_research_central_db")
                 connection.set_character_set('utf8')
                 cur = connection.cursor()
                 now = datetime.datetime.now()
@@ -1515,6 +1337,7 @@ def access_db(request):
                 all_data.append(others)
 
                 return HttpResponse(json.dumps(all_data), content_type='application/json')
+                
         elif request.GET['action'] =="access_db_author_network":
 
             pub_co_authors = []
@@ -1533,52 +1356,12 @@ def access_db(request):
                         co_author_name = co_author_entry.name.replace(",","")
                         if co_author_name == author_name:
                             continue
-                        #co_author_profile_url = co_author_entry.profile_url
+                        
                         en = {}
                         en["name"] = co_author_name
                         en["imports"] = [author_name]
                         data_to_return.append(en)
-                        # en = {}
-                        # en["name"] = author_name
-                        # en["imports"] = [co_author_name]
-                        # data_to_return.append(en)
-                        
-
-                    # all_ext_co_authors = publication_co_author.objects.filter(publication_id = entry.publication_id)
-                    # for a in all_ext_co_authors:
-                    #     co_author_entry = co_author.objects.get(id = a.co_author_id)
-                    #     co_author_id = co_author_entry.id
-                    #     co_author_name = co_author_entry.name.replace(",","")
-                    #     if co_author_name == author_name:
-                    #         continue
-                    #     # if co_author_name not in all_ex_names:
-                    #     #     all_ex_names.append(co_author_name)
-                        
-                    #     #co_author_profile_url = co_author_entry.profile_url
-                    #     en = {}
-                    #     en["name"] = co_author_name
-                    #     en["imports"] = [author_name]
-                    #     data_to_return.append(en)
-                    #     # en = {}
-                    #     # en["name"] = author_name
-                    #     # en["imports"] = [co_author_name]
-                    #     # data_to_return.append(en)
-                      
-
-           
-
-            # d = [
-            #     {"name": "Manuel_Jose", "imports": ["vivant", "designer", "artista", "empreendedor"]},
-            #     {"name": "vivant", "imports": ["artista"]},
-            #     {"name": "designer", "imports": []},
-            #     {"name": "artista", "imports": []},
-            #     {"name": "empreendedor", "imports": []}, 
-            #     {"name": "test1", "imports": ["test2"]},
-            #     {"name": "test2", "imports": ["test1"]}, 
-            #     {"name": "asdasdasdas", "imports": ["test1"]}
-
-            #     ]
-
+                       
             return HttpResponse(json.dumps(data_to_return), content_type='application/json')
 
         elif request.GET['action'] == "access_db_author_profile_co_authors":
@@ -1624,27 +1407,26 @@ def access_db(request):
                     
                     co_author_dict = {}
                     if not check_duplicates(co_author_name,all_authors,author_name):
+                        
                         all_authors.append(co_author_name)
                         co_author_dict["Id"] = co_author_id
                         co_author_dict["Name"] = co_author_name
                         co_author_dict["Weight"] = 0
                         co_author_dict["Url"] = co_author_profile_url
-                        #co_author_dict["affiliation"] = co_author_aff_name
-
+                       
                         co_authors.append(co_author_dict)
                         root["Nodes"].append(co_author_dict)
 
-                        
-                    co_authors_names.append(co_author_name) # save all co-author names
+                co_authors_names.append(co_author_name) # save all co-author names
             
-            #### author entry #######
+           
             co_author_dict = {}
             co_author_dict["Id"] = authorID
             co_author_dict["Name"] = author_name
             co_author_dict["Weight"] = 0
             co_author_dict["Url"] = "wwww.google.com"
             root["Nodes"].append(co_author_dict)
-            ###########################
+            
             # calculate eaach co_autor's weight    
             for each_author in all_authors:
                 for item in co_authors:
@@ -1707,9 +1489,9 @@ def access_db(request):
 
             return HttpResponse(json.dumps(data_to_return), content_type='application/json')
 
-        elif  request.GET['action'] == "access_db_total_countries_central_page":       # ONLY CENTRAL EDITION
+        elif  request.GET['action'] == "access_db_total_countries_central_page":     
 
-            connection = MySQLdb.connect(host="localhost",user="root",passwd="",db="uth_research_central_db")
+            connection = MySQLdb.connect(host="localhost",user="root",passwd="******",db="uth_research_central_db")
             connection.set_character_set('utf8')
             cur = connection.cursor()
             
@@ -1788,15 +1570,19 @@ def access_db(request):
                 # return HttpResponse(len(sorted_by_keyw_size))
             return HttpResponse(json.dumps(sorted_by_keyw_size), content_type='application/json')  
 
-
-
     else:
         return HttpResponse("NOT OK")
 
 
+def my_custom_404_view(request):
+    return render(request, 'error_404.html')
 
+def my_custom_500_view(request):
+    return render(request, 'error_500.html')
+    
 def check_duplicates(seq1,seq2,seq3):
-
+     """ Check for duplicates between seq1 list and seq2 list """
+     
     a = seq1.lower()
     a_split = a.split(" ")
     a_list_max = max(a_split, key=len)
@@ -1822,4 +1608,148 @@ def check_duplicates(seq1,seq2,seq3):
         if difflib.SequenceMatcher(None, element, a).ratio() > 0.65:
             return True
     return False
+def find_common_elements(list1,list2):
+    """ Find the common elements from list1 and list2 """
 
+    if not list1:
+        return list2
+    elif not list2:
+        return list1
+    else:
+        return set(list1) & set(list2)
+
+def check_if_exists(author_name):
+    """  Find if exists an author with the given name """
+    
+    try:
+        result = author.objects.get(name = author_name)
+        return True
+    except author.DoesNotExist:
+        return False
+
+def find_affiliations(not_rest_affs,src):
+  
+    affiliations = []
+    all_affiliations = []
+    
+    all_entries = affiliation.objects.all()
+    for entry in all_entries:
+       
+        affiliation_location = entry.affiliation_location
+
+        if affiliation_location == "":
+            continue
+        
+        affil = {}
+        affiliation_name = entry.affiliation_name
+        affiliation_id = entry.id    
+        #and check_affs(affiliation_name,not_rest_affs) 
+        if affiliation_name not in affiliations and affiliation_name != "" and check_affs(affiliation_name,not_rest_affs):#and not check_for_dublicates(affiliation_name,affiliations):
+           
+            #aff = affiliation.objects.get(affiliation_name = affiliation_name)
+            affiliations.append(affiliation_name)
+            affiliation_weight = co_author_affiliation.objects.filter(affiliation_id = affiliation_id)
+            if len(affiliation_weight) == 0:
+                continue
+            if src == "access_db":
+                affil["affiliation_name"] = affiliation_name
+            else:
+                affil["weight"] = len(affiliation_weight)
+                affil["affiliation_name"] = affiliation_name
+            affil["affiliation_location"] = affiliation_location
+            affil["affiliation_id"] = affiliation_id
+            
+        else:
+            continue  
+        all_affiliations.append(affil)
+        
+    if src == "access_db":
+        data = sorted(all_affiliations, key=lambda k: k['affiliation_name'],reverse=True)
+        return data
+    else:
+        data = sorted(all_affiliations, key=lambda k: k['weight'],reverse=True)
+        new_data = []
+        for item in data:
+            affil_new = {}
+            aff_weight =  item["weight"]
+            aff_name = item["affiliation_name"]
+            aff_location = item["affiliation_location"]
+            aff_id = item["affiliation_id"]
+            affil_new["affiliation_name"] = "("+str(aff_weight)+")" + aff_name
+            affil_new["affiliation_location"] = aff_location
+            affil_new["affiliation_id"] = aff_id
+            new_data.append(affil_new) 
+
+        return new_data
+
+def find_affiliations_central_page(not_rest_affs):
+
+    affiliations = []
+    all_affiliations = []
+    
+    all_entries = affiliation.objects.all()
+    for entry in all_entries:
+       
+        affiliation_location = entry.affiliation_location
+
+        if affiliation_location == "":
+            continue
+        
+        affil = {}
+        affiliation_name = entry.affiliation_name
+        affiliation_id = entry.id    
+        #and check_affs(affiliation_name,not_rest_affs) 
+        if affiliation_name not in affiliations and affiliation_name != "" and check_affs(affiliation_name,not_rest_affs):#and not check_for_dublicates(affiliation_name,affiliations):
+           
+            #aff = affiliation.objects.get(affiliation_name = affiliation_name)
+            affiliations.append(affiliation_name)
+            affiliation_weight = co_author_affiliation.objects.filter(affiliation_id = affiliation_id)
+            if len(affiliation_weight) == 0:
+                continue
+            if src == "access_db":
+                affil["affiliation_name"] = affiliation_name
+            else:
+                affil["weight"] = len(affiliation_weight)
+                affil["affiliation_name"] = affiliation_name
+            affil["affiliation_location"] = affiliation_location
+            affil["affiliation_id"] = affiliation_id
+            
+        else:
+            continue  
+        all_affiliations.append(affil)
+    
+        data = sorted(all_affiliations, key=lambda k: k['affiliation_name'],reverse=True)
+        return data
+    
+   
+def check_for_dublicates(aff,aff_list):
+
+    a = aff.lower()
+    if "university" in a:
+        a = a.replace("university","")
+
+    a_split = a.split(" ")
+    a_max = max(a_split, key=len)
+
+    seq2_lower = [x.lower() for x in aff_list]
+
+    for element in seq2_lower:
+        element_split = element.split(" ")
+        element_max = max(element_split, key=len)
+        if element_max in a_split or a_max in element:
+            return True
+    
+    for element in seq2_lower:
+        if difflib.SequenceMatcher(None, element, a).ratio() > 0.75:
+            return True
+    return False
+
+def check_affs(affiliation,affiliations):
+    
+    affiliation_parts = affiliation.replace(",", "")
+    all_parts = affiliation_parts.split()
+    for part in all_parts:
+        if part in affiliations:
+            return False
+        
+    return True
