@@ -17,7 +17,6 @@ import httplib
 execeptions = (socket.error,urllib2.HTTPError,urllib2.URLError,httplib.HTTPException)
 execeptions1 = (socket.error,urllib2.URLError,httplib.HTTPException)
 
-#############################################################################################################################
 connection = MySQLdb.connect(host="localhost",user="root",passwd="********",db="uth_research_db")
 connection.set_character_set('utf8')
 cur = connection.cursor()
@@ -31,7 +30,6 @@ cur.execute('alter table `uth_research_db`.`app_keyword` convert to character se
 cur.execute('alter table `uth_research_db`.`app_publication` convert to character set utf8 collate utf8_general_ci;')
 cur.execute('alter table `uth_research_db`.`app_publication_cited` convert to character set utf8 collate utf8_general_ci;')
 cur.execute('alter table `uth_research_db`.`app_subject_area` convert to character set utf8 collate utf8_general_ci;')
-#############################################################################################################################
 
 
 
@@ -87,7 +85,8 @@ def remove_special_characters(string):
 
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def find_publication_title(soup):
-
+    """ Find the publication's title """
+    
     try:
         title = soup.find("span",class_="docTitle").find("a").text.strip()        # the title of publication
         if "&searchTerm=AU-ID%" in title:
@@ -100,6 +99,7 @@ def find_publication_title(soup):
 
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def find_publication_venue(soup):
+    """ Find the publication's venue """
     
     try:
         venue1 = soup.find("div",class_="paddingT5").find("h2",class_="sourceTitle").text.strip()
@@ -109,6 +109,7 @@ def find_publication_venue(soup):
    
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def find_publication_date(soup):
+    """ Find the publication's date """
     
     try:
         date = soup.find("div",class_="dataCol4").find("span").text.strip()
@@ -120,6 +121,7 @@ def find_publication_date(soup):
    
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def find_publication_type(soup):
+    """ Find the publication's type """
     
     try:
         pub_type  = soup.find("div",class_="formatSourceExtended").find("strong",text = re.compile("Source Type")).next_sibling.strip().split(" ")[0]
@@ -133,6 +135,7 @@ def find_publication_type(soup):
 
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def find_publications_cited(soup,scopus_machineID):
+    """ Find the publications which cite the giver publication """
     
     try:
         publications = []
@@ -179,6 +182,7 @@ def find_publications_cited(soup,scopus_machineID):
 
 @retry(execeptions, tries=4, delay=10, backoff=3) 
 def find_publication_citations(soup):
+    """ Find the publication's number of citations """
     
     try:
         citations = soup.find("div",class_="citedHeader").find("h2").text.strip().split(" ")[2]
@@ -188,7 +192,8 @@ def find_publication_citations(soup):
    
 @retry(execeptions, tries=4, delay=10, backoff=3) 
 def find_publication_keywords(soup):
-
+    """ Find the publication's number of citations """
+    
     try:
         keywords = []
         has_author_keywords = soup.find("h2",text=re.compile('Author keywords'))
@@ -234,7 +239,8 @@ def find_publication_keywords(soup):
 
 @retry(execeptions, tries=4, delay=10, backoff=3) 
 def find_authors_and_affiliations(soup,author_name,all_department_authors):
-
+    """ Find the collaborated authors and their affiliations for the given publication """
+    
     authors_affiliations = []
     author_last_name = author_name.split()[1]
     all_authors = soup.find("div",class_="dataCol3").find("span").findAll("a")
@@ -260,7 +266,8 @@ def find_authors_and_affiliations(soup,author_name,all_department_authors):
     return authors_affiliations
 
 def is_department_author(author_name,all_department_authors):
-
+    """ Check if author is a author of the department """
+    
     author_name_split = author_name.split(" ")
     author_name_list_max = max(author_name_split, key=len)
     for each_author in all_department_authors:
@@ -271,6 +278,8 @@ def is_department_author(author_name,all_department_authors):
 
 @retry(execeptions, tries=4, delay=10, backoff=3)    
 def find_affiliation(url):
+    """ Find the affiliation for the given author"""
+      
     try:
         soup = get_soup(url)
         affiliation = soup.find("div",class_="authAffilcityCounty").text.strip()
@@ -314,7 +323,6 @@ def get_author_soup(authorID,scopus_machineID,offset,sl):
         username = "papa"
         password = "%pa14756"
         p = urllib2.HTTPPasswordMgrWithDefaultRealm()
-
         p.add_password(None, author_url, username, password)
 
         handler = urllib2.HTTPBasicAuthHandler(p)
@@ -329,7 +337,6 @@ def get_author_soup(authorID,scopus_machineID,offset,sl):
         soup = BeautifulSoup(htmltext)
         return [soup,sl]
             
-    
     except AttributeError:
         return None
     except HTTPError:
@@ -342,7 +349,8 @@ def get_author_soup(authorID,scopus_machineID,offset,sl):
 
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def find_subject_areas(url):
-    print "here"
+    """ Find the subject areas for the given autho r"""
+    
     sub_areas = []
     try:
         soup = get_soup(url)
@@ -357,6 +365,7 @@ def find_subject_areas(url):
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def find_publication_doi(title):
     """ Find the digital object identifier (doi) from http://search.crossref.org of the publication """
+    
     try:
         opener = urllib2.build_opener()
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
@@ -429,6 +438,7 @@ def check_database(title,citations,author_name,url):
 
 @retry(execeptions, tries=4, delay=10, backoff=3)   
 def start_crawling(author,authorID):
+    """ Start the crawling proccess """
     
     try:  
         publications = []       # a dictionary for saving all publication of the author 
@@ -438,7 +448,7 @@ def start_crawling(author,authorID):
         if authorID == None or authorID == "":
             return None
         
-        ####### find all the authors of the department #######
+        # find all the authors of the department 
         all_department_authors = []
         query = "SELECT * FROM app_author"
         cur.execute(query)
@@ -446,7 +456,7 @@ def start_crawling(author,authorID):
         for a in row:
             author_entry = (a[0],a[1])        # id + name
             all_department_authors.append(author_entry)
-        ######################################################
+        
 
         titles = []                 
         urls = []
@@ -500,7 +510,7 @@ def start_crawling(author,authorID):
             for author in all_authors:
                 authors.append((author.find_next("a").text,"-"))
                 
-            publication['authors_affiliations'] = (authors,"-","-")   # also add the affiliation
+            publication['authors_affiliations'] = (authors,"-","-")   
             publications.append(publication)      
 
             return publications
@@ -563,15 +573,3 @@ def start_crawling(author,authorID):
 
     return publications
    
-
-# if __name__ == '__main__':
-#     c = 0
-#     results = start_crawling("Manolis Vavalis")
-#     if results != None:
-#         for p in results:
-#             print "---------------------------------"
-#             print p
-#             c = c + 1
-#         print c
-#     else:
-#         print "there are no publications with this name"
