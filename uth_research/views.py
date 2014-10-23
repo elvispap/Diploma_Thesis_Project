@@ -15,7 +15,7 @@ import difflib
 import MySQLdb
 from django.contrib.staticfiles import finders
 
-not_rest_affs = ["Thessaly","thessaly","volos","Volos"]   # global 
+not_rest_affs = ["Thessaly","thessaly","volos","Volos"] 
 
 def central_page(request):    
 
