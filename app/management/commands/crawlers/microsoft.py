@@ -15,12 +15,6 @@ import httplib
 connection = MySQLdb.connect(host="localhost",user="root",passwd="********",db="uth_research_db")
 connection.set_character_set('utf8')
 cur = connection.cursor()
-# connection = MySQLdb.connect(host="localhost",user="root",passwd="",db="uth_research_db")
-# connection.set_character_set('utf8')
-# x = connection.cursor()
-# x.execute('SET NAMES utf8;') 
-# x.execute('SET CHARACTER SET utf8;')
-# x.execute('SET character_set_connection=utf8;')
 
 opener = urllib2.build_opener()
 opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
@@ -76,6 +70,8 @@ def retry(ExceptionToCheck, tries=4, delay=15, backoff=3, logger=None):
 
 
 def remove_special_characters(string):
+     """ Used for removing some special characters from the giver string """
+     
     all_chars = ['-','(',')','/','*',':','<','>','.',',']
     for char in all_chars:
         string = string.replace(char,' ')
@@ -84,16 +80,15 @@ def remove_special_characters(string):
 
 @retry(execeptions, tries=4, delay=10, backoff=3)   
 def find_publication_keywords(url):
-    #print url
+    """ Find the publication's keywords """
+    
     keywords = []
     try:
         htmltext = opener.open(url).read()
         soup = BeautifulSoup(htmltext)
-        #print "POINT 1"
         content = soup.find("div",id = "ctl00_divLeftWrapper")
-        #print "POINT 2"
+        
         has_keywords = content.find("div",class_="section-wrapper").find("ul").findAll("li")
-        #print "POINT 3"
         for keyw in has_keywords:
             keyword = keyw.find("a").text.strip()
             keywords.append(' '.join(remove_special_characters(keyword.lower().strip()).split()))
@@ -110,7 +105,8 @@ def find_publication_keywords(url):
 
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def find_publication_title(soup):
-
+     """ Find the publication's title """
+     
     try:
         title = soup.find("h3").find("a").text.strip()
         return ' '.join(remove_special_characters(title.capitalize().strip()).split())
@@ -119,7 +115,7 @@ def find_publication_title(soup):
 
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def find_publication_url(soup):
-
+     """ Find the publication's URL source """
     try:
         url = "http://academic.research.microsoft.com/" + soup.find("h3").find("a")["href"]      # the url of publication
         return url
@@ -128,7 +124,8 @@ def find_publication_url(soup):
 
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def find_publication_citations(soup):
-
+     """ Find the publication's number of citations """
+     
     try:
         has_citations  = soup.find("span",class_="citation")
         citations = has_citations.find("a").text
@@ -140,6 +137,8 @@ def find_publication_citations(soup):
 
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def find_publications_cited(soup):
+    """ Find the publications which cite the given publication """
+     
     publications = []
     try:
         
@@ -180,13 +179,14 @@ def find_publications_cited(soup):
         print "type error"
         return publications
     except AttributeError:
-        print "no cited"
+        print "error publications cited"
         return publications
 
 
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def find_authors_and_affiliations(soup,author_name,all_department_authors):
-   
+    """ Find the collaborated authors and theri affiliations for the giver publication """
+    
     try:
     
         authors_affiliations = []
@@ -214,11 +214,12 @@ def find_authors_and_affiliations(soup,author_name,all_department_authors):
             time.sleep(10) 
         return authors_affiliations
     except AttributeError:
-        print "AttributeError find authors"
+        print "error find_authors_and_affiliations"
         return authors_affiliations  
 
 def is_department_author(author_name,all_department_authors):
-    print "is_department_author"
+    """ Check if a author is a author from the department """
+    
     author_name_split = author_name.split(" ")
     author_name_list_max = max(author_name_split, key=len)
     for each_author in all_department_authors:
@@ -231,6 +232,8 @@ def is_department_author(author_name,all_department_authors):
 
 @retry(execeptions, tries=4, delay=10, backoff=3)    
 def find_affiliation(url):
+     """ Find the publication's URL source """
+     
     try:
         soup = get_soup(url)
         affiliation = soup.find("a",id="ctl00_MainContent_AuthorItem_affiliation").text.strip()
@@ -242,7 +245,7 @@ def find_affiliation(url):
 
 @retry(execeptions, tries=4, delay=20, backoff=3)
 def get_soup(url):
-
+  
     try:
         htmltext = opener.open(url).read()
         soup = BeautifulSoup(htmltext)
@@ -253,6 +256,7 @@ def get_soup(url):
 
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def find_subject_areas(url):
+    """ Find the subject area for the giver researcher (url) """
     sub_areas = []
     try:
         soup = get_soup(url)
@@ -265,7 +269,8 @@ def find_subject_areas(url):
 
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def find_publication_doi(title):
-
+    """ Find the publication's doi """
+    
     try:
         opener = urllib2.build_opener()
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
@@ -288,12 +293,12 @@ def find_publication_doi(title):
             return doi.split("org/")[1]
 
     except AttributeError:
-        print "no doi"
+        print "error find doi"
         return ""
         
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def find_type_date_venue(soup):
-    
+    """ Find the publication's type,date and venue """
     try:
         pub_type = "other"
         pub_date = "-"
@@ -359,14 +364,14 @@ def find_type_date_venue(soup):
 
         return [pub_date,pub_venue,pub_type]
     except AttributeError:
-        print "AttributeError"
+        print "error find_type_date_venue"
         return [pub_date,pub_venue,pub_type]
 
 
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def check_database(title,citations,author_name):
-    
-    """ Check the database if the current publication exists. If not, we check if its citations have changed and if yes,udpate the DB """
+""" Check the database if the current publication exists. If not, we check if its citations have changed and if yes,udpate the DB """
+
     try:
         query = "SELECT * FROM app_publication WHERE pub_title LIKE %s"
         cur.execute(query,["%" + title +"%"])
@@ -408,7 +413,7 @@ def check_database(title,citations,author_name):
 
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def start_crawling(author,authorID):
-
+    """ Start the crawling proccess """
     try:
         publications = []
         publication = {}
@@ -418,7 +423,7 @@ def start_crawling(author,authorID):
             return None
         author_url = "http://academic.research.microsoft.com/Author/%s" % authorID
         
-        ####### find all the authors of the department #######
+        # find all the authors of the department 
         all_department_authors = []
         query = "SELECT * FROM app_author"
         cur.execute(query)
@@ -426,7 +431,7 @@ def start_crawling(author,authorID):
         for a in row:
             author_entry = (a[0],a[1])        # id + name
             all_department_authors.append(author_entry)
-        ######################################################
+        
        
         soup = get_soup(author_url)
         time.sleep(10)  
@@ -498,18 +503,4 @@ def start_crawling(author,authorID):
         return publications   
 
     return publications
-    
-
-# if __name__ == '__main__':
-#     c = 0
-#     results = start_crawling("Manolis Vavalis")
-#     f = open("out.txt","w")
-#  #   print results[len(results)-1]['affiliations']
-#     if results!= None:
-#         for p in results:
-#             print p
-#             c = c + 1
-            
-#     f.close()
-            
     
