@@ -67,6 +67,8 @@ def retry(ExceptionToCheck, tries=4, delay=10, backoff=3, logger=None):
 
 
 def remove_special_characters(string):
+    """ Used for removing some special characters for the given sttring """
+    
     all_chars = ['-','(',')','/','*',':','<','>','.',',']
     for char in all_chars:
         string = string.replace(char,' ')
@@ -75,12 +77,13 @@ def remove_special_characters(string):
 
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def find_publication_citations(url):
+    """ Find the publication's number of citations """
     
     try:
         htmltext = opener.open(url).read()
         soup = BeautifulSoup(htmltext)
         metrics_tab_url = "http://ieeexplore.ieee.org/" + soup.find("div",id="nav-article").find("li",class_="active").find_next("a",id="abstract-metrics-tab")["href"]
-        #print metrics_tab_url
+        
         htmltext = opener.open(metrics_tab_url)
         soup = BeautifulSoup(htmltext)
         all_divs = soup.findAll("div",class_="art-cites-item")
@@ -104,6 +107,7 @@ def find_publication_citations(url):
 
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def find_publications_cited(url):
+    """ Find the publications which cite the given publication (from the url) """
     
     try:
         publications = []
@@ -127,10 +131,12 @@ def find_publications_cited(url):
             
         return publications
     except AttributeError:
-        print "no cited"
+        print "error publications cited"
         return publications
+        
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def find_publication_venue(url):
+    """ Find the publication's venue """
     
     try:
         htmltext = opener.open(url).read()
@@ -139,12 +145,14 @@ def find_publication_venue(url):
 
         return venue
     except AttributeError:
-        print "error_venue A"
+        print "error_venue"
         return "-"
    
 
 @retry(execeptions, tries=4, delay=10, backoff=3)   
 def find_publication_year_and_type( url):
+    """ Find the publication's type and URL source """
+    
     date = "-"
     type_of_pub = "-"
     try:
@@ -169,7 +177,8 @@ def find_publication_year_and_type( url):
 
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def find_publication_keywords(url):
-
+    """ Find the publication's keywords """
+    
     keywords = []
     try:
         htmltext = opener.open(url).read()
@@ -211,10 +220,10 @@ def find_publication_keywords(url):
         return keywords
         
     except AttributeError:
-        print "error keywords A"
+        print "error keywords "
         return keywords       #no keywords found
     except IndexError:
-        print "error keywords I"
+        print "error keywords index"
         return keywords       #no keywords found
     except TypeError:
         print "type error"
@@ -222,6 +231,7 @@ def find_publication_keywords(url):
 
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def find_publication_url(soup):
+    """ Find the publication's URL source """
     try:
         url = "http://ieeexplore.ieee.org/" + soup.find_next("a")["href"]      # the url of publication
         return url
@@ -230,7 +240,8 @@ def find_publication_url(soup):
 
 @retry(execeptions, tries=4, delay=10, backoff=3)       
 def find_publication_title(soup):
-
+    """ Find the publication's title """
+     
     try:
         title = soup.find_next("h3").find("a").text.strip()               # the title of publication
         return ' '.join(remove_special_characters(title.capitalize()).split()) 
@@ -239,7 +250,8 @@ def find_publication_title(soup):
 
 @retry(execeptions, tries=4, delay=10, backoff=3) 
 def find_publication_authors(soup,author_name):
-
+    """ Find the authors of the given publication """
+     
     try:
         author_last_name = author_name.split()[1]
         authors = []
@@ -256,14 +268,16 @@ def find_publication_authors(soup,author_name):
 
 @retry(execeptions, tries=4, delay=10, backoff=3) 
 def find_affiliations(soup):
+    """ Find the affiliations of the given publication """
     
     try:
         affilations = []
         all_affilations = soup.find("ul",id="Affiliation-refinements").findAll("li")
         for affiliation in all_affilations:
+            
             value = affiliation.find("span",class_="refinement").text.strip()
             value_2 = value.replace("(1)"," ").replace("(2)"," ").replace("\t"," ").replace("\r\n"," ").strip()
-            #value = affiliation.text.strip().lstrip().rstrip()
+            
             if not "Thessaly" in value_2:
                 affilations.append(value_2)
             
@@ -273,25 +287,18 @@ def find_affiliations(soup):
 
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def get_soup(author,page):
-    
+    """ Return the html code (soup) using the bs4 library"""
     try:
-        
         author_name = author.split()
         rows = 25
-        
-        # if len(author_name) == 1:
-        #   url = "http://ieeexplore.ieee.org/search/searchresult.jsp?\searchWithin=p_Last_Names:%s&matchBoolean=true&queryText=(p_Authors:%s)&rowsPerPage=%s&pageNumber=%s&resultAction=ROWS_PER_PAGE" % (author_name[0],author_name[0], rows, page)
-        # else:   
-        #url = "http://ieeexplore.ieee.org/search/searchresult.jsp?searchWithin=p_First_Names:%s&searchWithin=p_Last_Names:%s&matchBoolean=true&queryText=(p_Authors:%s,+%s)&rowsPerPage=%s&pageNumber=%s&resultAction=ROWS_PER_PAGE" % (author_name[0],author_name[1], author_name[0], author_name[1], rows, page)
+       
         new_url = "http://ieeexplore.ieee.org/search/searchresult.jsp?queryText%3D{0}+{1}&pageNumber={2}" . format(author_name[0],author_name[1],page)
         htmltext = opener.open(new_url).read()
         soup = BeautifulSoup(htmltext)
         return soup
-    # except socket.error:
-    #   print "error soup"
-    #   return None
+   
     except AttributeError:
-        print "error soup A"
+        print "error,cant returnded soup fir this page"
         return None
 
 
@@ -314,7 +321,7 @@ def check_database(title,citations,author_name):
                 connection.commit()
                 
                 # update also the entry in central database
-                connection_2 = MySQLdb.connect(host="localhost",user="root",passwd="",db="uth_research_central_db")
+                connection_2 = MySQLdb.connect(host="localhost",user="root",passwd="******",db="uth_research_central_db")
                 connection_2.set_character_set('utf8')
                 x = connection_2.cursor()
                 x.execute("""UPDATE app_publication SET pub_citations=%s WHERE pub_title=%s""",[citations,title])
@@ -340,52 +347,14 @@ def check_database(title,citations,author_name):
           
             return False        # there is a publication with this title,so ingore this publication
        
-            #############################################################################
-
-            # if publications_cited:
-            #     for pub in publications_cited:
-            #         pub_cited_title = pub[0]
-            #         pub_cited_url = pub[1]
-
-            #         query = "SELECT * FROM app_publication_cited WHERE pub_title LIKE %s"
-            #         cur.execute(query,["%" + pub_cited_title +"%"])
-            #         row = cur.fetchall()
-            #         if  row:   # exists
-            #             pub_citedID = row[0][0]
-                       
-            #         else:       # not exists
-            #             print "write to app_publication_cited"
-            #             cur.execute("""INSERT INTO app_publication_cited (pub_title,pub_url) VALUES (%s,%s)""",[pub_cited_title,pub_cited_url])
-            #             pub_citedID = cur.lastrowid
-            #             connection.commit()
-
-            #             # update also the entry in central database
-            #             connection_2 = MySQLdb.connect(host="localhost",user="root",passwd="",db="uth_research_central_db")
-            #             connection_2.set_character_set('utf8')
-            #             x = connection_2.cursor()
-            #             x.execute("""INSERT INTO app_publication_cited (pub_title,pub_url) VALUES (%s,%s)""",[pub_cited_title,pub_cited_url])
-            #             pub_citedID = x.lastrowid
-            #             connection_2.commit()
-
-
-            #         query = "SELECT * FROM app_publication_publication_cited WHERE publication_id = %s AND publication_cited_id = %s"
-            #         cur.execute(query,[pub_id,pub_citedID])
-            #         row = cur.fetchall()
-            #         if not row:
-            #             print "write to app_publication_publication_cited"
-            #             cur.execute("""INSERT INTO app_publication_publication_cited (publication_id,publication_cited_id) VALUES (%s,%s)""",[pub_id,pub_citedID])
-            #             connection.commit()
-            #############################################################################
-
-            
-     
     except AttributeError:
-        print "AttributeError check db"
+        print "error check database"
         return True
 
 @retry(execeptions, tries=4, delay=10, backoff=3)
 def find_publication_doi(title):
-
+    """ Find the publication's doi """
+    
     try:
         opener = urllib2.build_opener()
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
@@ -408,12 +377,13 @@ def find_publication_doi(title):
             return doi.split("org/")[1]
 
     except AttributeError:
-        print "no doi"
+        print "error doi"
         return ""
 
 @retry(execeptions, tries=4, delay=10, backoff=2)   
 def start_crawling(author,name_to_search):
-
+    """ Staart the crawling proccess"""
+    
     number_of_results = 25
     publications = []       # a dictionary for saving all publication of the author
     publication = {}
@@ -438,8 +408,8 @@ def start_crawling(author,name_to_search):
         publication['affiliations'] = affilations       # save the dictionary at the start of the list
         publications.append(publication)
         publication = {}
-        for each_page in range(2, int(pages)+2):   #range (int(pages)+1)  
-            #time.sleep(15)
+        for each_page in range(2, int(pages)+2):  
+            
             all_publications = soup.findAll("li",class_="noAbstract")
             
             for each_publication in all_publications:
@@ -464,10 +434,10 @@ def start_crawling(author,name_to_search):
                 date_and_type = find_publication_year_and_type(publication['url'])
                 publication['date'] = date_and_type[0].strip()
                 publication['type'] = date_and_type[1].strip()
-                time.sleep(5)
+                time.sleep(10)
                 publication['citations'] = publications_citations
                 publication['authors'] = find_publication_authors(each_publication,author) 
-                #time.sleep(20)
+                time.sleep(10)
                 publications.append(publication)
                 
                 publication = {}
@@ -479,17 +449,9 @@ def start_crawling(author,name_to_search):
         print "index error"
         return publications
     except AttributeError:
-        print "error start_crawling A"
+        print "error start_crawling "
         return publications     
 
     return publications
 
-# if __name__ == '__main__':
-#     results = start_crawling("Dimitrios Katsaros")
-#     c = 0
-#     if results!=None:
-#         for i in results :
-#             print i
-#             print "*************************"
-#             c = c + 1
-#     
+
