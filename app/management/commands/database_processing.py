@@ -90,7 +90,6 @@ def start_processing(results,source,author):
                     connection.commit()
                 
 
-            ###############################################################################################################
             if pub_pubs_cited:
                 for pub in pub_pubs_cited:
 
@@ -113,7 +112,7 @@ def start_processing(results,source,author):
                     if not row:
                         x.execute("""INSERT INTO app_publication_publication_cited (publication_id,publication_cited_id) VALUES (%s,%s)""",[publicationID,pub_citedID])
                         connection.commit()
-            ###############################################################################################################    
+            
             
             if source == "ieee":
                 
