@@ -13,7 +13,4 @@ $(document).ready(function() {
             $('#publications_cited_ul li').show();                  
         }
     });
-
-  
-
 });
