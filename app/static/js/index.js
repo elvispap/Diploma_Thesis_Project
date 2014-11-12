@@ -108,24 +108,14 @@ $(document).ready(function() {
                         x_label_years.push(data[i]['pub'][0]);
                         freq.push(data[i]['pub'][1]);
                     }
-                   
                     draw_citations_ann(x_label_years,freq);
-                   
-                   
                 }     
                 
             });
-        
-
     });
 
-          
-  
-       
     $("#hide_affiliations_col").click(function(){
 
-        // $("#map_col").animate({
-        //     width:'100%'},1500);
         $("#map_col").animate({
             width: '100%', 
             height: 630, 
@@ -174,12 +164,7 @@ $(document).ready(function() {
         var myLatlng = new google.maps.LatLng(39.304063,21.845854);
         map.setCenter(myLatlng);
         
-        
-       
-
     });
-  
-
 
     jQuery.expr[':'].Contains = function(a, i, m) {
         return jQuery(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
@@ -194,8 +179,6 @@ $(document).ready(function() {
             $('#affiliations_ul li').show();                  
         }
     });
-
-
 
     jQuery.expr[':'].Contains = function(a, i, m) {
         return jQuery(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
@@ -282,11 +265,7 @@ $(document).ready(function() {
             }     
             
     });
-  
-   
 });
-
-
 
 function draw_citations_cum(freq) {
         
@@ -593,8 +572,6 @@ function showMarkers(affiliations){
             animation: google.maps.Animation.DROP,
             title:affiliation,
             icon:image
-
-            
         });
         
         setListener(marker);
@@ -604,12 +581,7 @@ function showMarkers(affiliations){
 
     var mcOptions = {gridSize: 50, maxZoom: 15};
     var markerCluster = new MarkerClusterer(map, markers,mcOptions);
-    
-   
-    
 }
-
-
 
 
 function setListener(marker){
@@ -656,8 +628,6 @@ function setListener(marker){
                     links_2 = links_2 + '<a class="text_3 marker_co_author" href="'+profile_url+'">'+author+'</a>';
                         
                 }
-
-
                 var links_3 = "";
                 
                 for( key in publications){
@@ -688,9 +658,6 @@ function setListener(marker){
             }     
         
         });
-
-        
-            
     });
 
 }
