@@ -22,10 +22,7 @@ $(document).ready(function() {
         }
     });
 
-  
-
     var canvas = document.getElementById('myCanvas'),context = canvas.getContext('2d');
-
     // resize the canvas to fill browser window dynamically
     window.addEventListener('resize', resizeCanvas, false);
     
@@ -36,21 +33,14 @@ $(document).ready(function() {
         
     $(".citation_clicked").click(function(){
         $(this).parent().next(".cited_publications_div").slideToggle();
-       
-
-        
     });
 
     $("#co_authors_more").click(function(){
-        // $("#row2").css({"max-height":"600px"});
-        // $("#keywords_more").hide()
-        // $("#keywords_less").fadeIn(100);
         $("#tab-content5").animate({height:'100%'},1200);
         $("#co_authors_more").hide();
         $("#co_authors_less").fadeIn(100);
 
     });
-
 
     $("#co_authors_less").click(function(){
         // $("#row2").css({"max-height":"300px"});
@@ -67,41 +57,38 @@ $(document).ready(function() {
         
     });
 
-   
-    //$("#main_dataBTN").click(function(){
-       
-        $.ajax({
-            url:"/access_db/",
-            type: "GET",
-            data: {'action':"access_db_publications_doc_types_author_2",'author':author_name},
-            success:function(data){
+    $.ajax({
+        url:"/access_db/",
+        type: "GET",
+        data: {'action':"access_db_publications_doc_types_author_2",'author':author_name},
+        success:function(data){
 
-                var conferences = data[0];
-                var journals = data[1];
-                var books = data[2];
-                var others = data[3];
+            var conferences = data[0];
+            var journals = data[1];
+            var books = data[2];
+            var others = data[3];
 
-                var x_label_years = [];
-                var conferences_freq = [];
-                var journals_freq = [];
-                var books_freq = [];
-                var others_freq = [];
-                
-                for (var i = 0; i < conferences.length; i++) { 
-                    x_label_years.push(conferences[i][0]);
+            var x_label_years = [];
+            var conferences_freq = [];
+            var journals_freq = [];
+            var books_freq = [];
+            var others_freq = [];
+            
+            for (var i = 0; i < conferences.length; i++) { 
+                x_label_years.push(conferences[i][0]);
 
-                    conferences_freq.push(conferences[i][1]);
-                    journals_freq.push(journals[i][1]);
-                    books_freq.push(books[i][1]);
-                    others_freq.push(others[i][1]);
-                }
-          
-                draw_graph_doc_types2(x_label_years,conferences_freq,journals_freq,books_freq,others_freq,"type_2_div","Production by publication type");
-                
-            }     
-        });
+                conferences_freq.push(conferences[i][1]);
+                journals_freq.push(journals[i][1]);
+                books_freq.push(books[i][1]);
+                others_freq.push(others[i][1]);
+            }
+      
+            draw_graph_doc_types2(x_label_years,conferences_freq,journals_freq,books_freq,others_freq,"type_2_div","Production by publication type");
+            
+        }     
+    });
 
-        $.ajax({
+    $.ajax({
             url:"/access_db/",
             type: "GET",
             data: {'action':"access_db_publications",'author':author_name,'source':'author'},
@@ -124,16 +111,10 @@ $(document).ready(function() {
                 for (var i = 0; i < freq.length; i++){
                     result[i] = freq.slice(0, i + 1).reduce(function(p, i){ return p + i; });
                 }
-
-                for(var i = 0; i < freq.length; i++){
-                    
+                 for(var i = 0; i < freq.length; i++){
                     new_data.push([years[i],result[i]]);
                 }
-                
                 draw_graph_documents(new_data,author_name,"pubs_div","Cumulative publications published","Publications");
-
-            
-               
             }     
         
         
@@ -153,11 +134,9 @@ $(document).ready(function() {
                 for (var i = 0; i < data.length; i++) { 
                     years.push(data[i]["pub"][0]);
                     citations.push(data[i]["pub"][1]);
-
                     cit = cit + data[i]["pub"][1];
-                    //new_data.push([data[i]['pub'][0],data[i]['pub'][1]]);
                 }
-                console.log("TOTAL CITATIONS:",cit);
+                //console.log("TOTAL CITATIONS:",cit);
                 var result = citations.concat();
         
                 for (var i = 0; i < citations.length; i++){
@@ -169,7 +148,6 @@ $(document).ready(function() {
                 }
                
                 //draw_citations_cum(new_data);
-
                 draw_graph_citations(new_data,years,author_name,"cita_div","Citations");
             }     
         });
@@ -190,7 +168,6 @@ $(document).ready(function() {
                         years.push(data[i]['pub'][0]);
                     }
                     var result = citations.concat();
-        
                     for (var i = 0; i < citations.length; i++){
                         result[i] = citations.slice(0, i + 1).reduce(function(p, i){ return p + i; });
                     }
@@ -198,53 +175,37 @@ $(document).ready(function() {
                     for(var i = 0; i < citations.length; i++){
                         new_data.push([years[i],result[i]]);
                     }
-                   
                     draw_graph_citations(new_data,years,author_name,"cita_div","Citations");
-                   
                 }     
-                
             });
-           
-            
         });
 
         $("#type_ann").click(function(){
-            
-            // var freq = [];
-            // var x_label_years = []
+ 
             $.ajax({
                 url:"/access_db/",
                 type: "GET",
                 data: {'action':"access_db_publications_citations",'author':author_name,'source':'author'},
                 success:function(data){
 
-                   
                     var new_data = [];
                     var years = [];
                     var citations = [];
-                    //new_data = data[0];
-
+            
                     for (var i = 0; i < data.length; i++) { 
                         years.push(data[i]["pub"][0]);
-                        // citations.push(data[i]["pub"][1]);
                         new_data.push([data[i]['pub'][0],data[i]['pub'][1]]);
                     }
                     draw_graph_citations(new_data,years,author_name,"cita_div","Citations");
                 }     
-                
             });
-
         });
-
-
         $.ajax({
             url:"/access_db/",
             type: "GET",
             data: {'action':"access_db_publications_doc_types_author_1",'author':author_name},
             success:function(data){
-               
                 draw_graph_doc_types1(data,"type_1_div","Publications type");
-                
             }     
         });
 
@@ -343,8 +304,6 @@ $(document).ready(function() {
                 $("#collBTN").css({"color":"#A5A5A5"});
                  $("#keywsBTN").css({"color":"#A5A5A5"}); 
 
-               
-
                 $("#keywords_div").hide(); 
                 $("#documents_div").hide();
                 $("#main_data_div").hide();
@@ -355,32 +314,18 @@ $(document).ready(function() {
 
     });
 
-    
-
-
-
-
-
-
     $(".collBTN").click(function(){
         $("#collBTN").css({"font-weight": "bold"});
         $("#collBTN").css({"color": "black"});
         $("#docsBTN").css({"color":"#A5A5A5"});
-    
         $("#main_dataBTN").css({"color":"#A5A5A5"});
-        
-       
-        
         $("#keywsBTN").css({"color":"#A5A5A5"});
-       
-       
         $("#cited_byBTN").css({"color":"#A5A5A5"});
              
         $("#documents_div").hide();
         $("#main_data_div").hide();
         $("#keywords_div").hide();
         $("#cited_by_div").hide();
-
         $("#collborators_div").fadeIn(1500);
      
        
@@ -390,14 +335,10 @@ $(document).ready(function() {
 
         $("#docsBTN").css({"color": "black"});
         $("#docsBTN").css({"font-weight": "bold"});
-       
         $("#main_dataBTN").css({"color":"#A5A5A5"});
-        
-        $("#cited_byBTN").css({"color":"#A5A5A5"}); 
+         $("#cited_byBTN").css({"color":"#A5A5A5"}); 
         $("#collBTN").css({"color":"#A5A5A5"});
         $("#keywsBTN").css({"color":"#A5A5A5"}); 
-
-        $
 
         $("#tab-content2_tab-content3").hide();
         $("#collborators_div").hide();
@@ -416,12 +357,6 @@ $(document).ready(function() {
         else
             console.log("noo");
     });
-
-   
-    
-
-    
-
   
 });
 
