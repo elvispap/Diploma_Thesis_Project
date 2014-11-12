@@ -3,7 +3,6 @@ var ext_data;
 var resized;
 $(document).ready(function() {
 
-
     google.maps.event.addDomListener(window, 'load', initialize);
 
     $("#total_countriesBTN").click(function(){
@@ -13,11 +12,7 @@ $(document).ready(function() {
         $(".svg_container").hide();
         $("#total_counties_box").slideToggle();
     }); 
-
-    
-    
-
-   $.ajax({
+    $.ajax({
         url:"/access_db/",
         type: "GET",
         data: {'action':"access_db_publications_citations",'author':'ndex','source':'central'},
@@ -35,7 +30,6 @@ $(document).ready(function() {
             for (var i = 0; i < citations.length; i++){
                 result[i] = citations.slice(0, i + 1).reduce(function(p, i){ return p + i; });
             }
-
             for(var i = 0; i < citations.length; i++){
                 new_data.push([years[i],result[i]]);
             }
@@ -70,14 +64,9 @@ $(document).ready(function() {
                 for(var i = 0; i < citations.length; i++){
                     new_data.push([years[i],result[i]]);
                 }
-               
                 draw_citations_cum(new_data);
-               
             }     
-            
         });
-        
-        
     });
 
     $("#type_ann").click(function(){
@@ -97,21 +86,14 @@ $(document).ready(function() {
                     x_label_years.push(data[i]['pub'][0]);
                     freq.push(data[i]['pub'][1]);
                 }
-               
                 draw_citations_ann(x_label_years,freq);
-               
-               
             }     
                 
         });
-        
-
     });
 
     $("#hide_affiliations_col").click(function(){
 
-        // $("#map_col").animate({
-        //     width:'100%'},1500);
         $("#map_col").animate({
             width: '100%', 
             height: 630, 
@@ -120,7 +102,6 @@ $(document).ready(function() {
         }, resized);
 
         var currCenter = map.getCenter();
-        //google.maps.event.trigger(map, 'resize');
         map.setCenter(currCenter);
         
         $("#hide_affiliations_col").hide();
@@ -132,9 +113,7 @@ $(document).ready(function() {
         
         $("#map_col").animate({
             width:'75%'},1500);
-        // $("#map_col").animate({
-        //     left:'200px'},1200);
-
+      
         $("#show_affiliations_col").hide();
         $("#search_div").fadeIn(2000);
         $("#hide_affiliations_col").fadeIn(1100);
@@ -162,8 +141,6 @@ $(document).ready(function() {
         map.setCenter(myLatlng);
         
     });
-  
-
 
     jQuery.expr[':'].Contains = function(a, i, m) {
         return jQuery(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
@@ -178,9 +155,6 @@ $(document).ready(function() {
             $('#affiliations_ul li').show();                  
         }
     });
-
-
-    
 
     var conferences = [];
     var conferences_freq = [];
@@ -211,32 +185,21 @@ $(document).ready(function() {
 
                 }
                 for (var i = 0; i < journals.length; i++) { 
-                   
                     journals_freq.push(journals[i]["journal"][1]);
                     
                 }
                 for (var i = 0; i < books.length; i++) { 
-                    
                     books_freq.push(books[i]["book"][1]);
                     
                 }
                 for (var i = 0; i < conferences.length; i++) { 
-                    
                     others_freq.push(others[i]["other"][1]);
                     
                 }
-               
                 draw_doc_types(x_label_years,conferences_freq,journals_freq,books_freq,others_freq);
-
-               
             }     
-            
     });
-  
-   
 });
-
-
 
 function draw_citations_cum(freq) {
         
@@ -506,15 +469,12 @@ function showMarkers(affiliations){
     var coll_authors;
     var markers = [];
 
-   
-
     for (var i=0; i<affiliations.length; i++) {
         
         affiliation_name = affiliations[i]["affiliation_name"];
         affiliation_id = affiliations[i]["affiliation_id"];
         affiliation_location = affiliations[i]["affiliation_location"].split(",");
-       
-        
+      
         var image = "../static/img/marker_2.png";
         var marker = new google.maps.Marker({
             position: new google.maps.LatLng(affiliation_location[0],affiliation_location[1]),
@@ -569,9 +529,6 @@ function setListener(marker){
             }     
         
         });
-
-        
-            
     });
 
 }
