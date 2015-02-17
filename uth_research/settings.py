@@ -28,7 +28,15 @@ SECRET_KEY = '9k#uy^5e85z%+7$l08$)=#rhdzbud*vp=f)1nqixn%p#q634xb'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-TEMPLATE_DEBUG = False
+
+TEMPLATE_DEBUG = True
+
+# TEMPLATE_DIRS = (
+# 	TEMPLATE_PATH,
+# )
+# TEMPLATE_DIRS = (
+#     "C:/Users/Elvis/Desktop/Diplwmatikh/uth_research/uth_research/templates",
+# )
 
 TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates').replace('\\','/'),
@@ -45,7 +53,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-	'app',
+    'app',
     'pagination',
 )
 
@@ -72,15 +80,14 @@ ROOT_URLCONF = 'uth_research.urls'
 WSGI_APPLICATION = 'uth_research.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.6/ref/settings/#databases
+# Databases
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'uth_research_db',
+        'NAME': 'uth_research_db_2',
         'USER': 'root', 
-        'PASSWORD': '********',
+        'PASSWORD': '******',
         'HOST': 'localhost',
         'PORT': '',
     },
@@ -88,9 +95,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'uth_research_central_db',
         'USER': 'root', 
-        'PASSWORD': '********',        
-        'HOST': 'localhost',        
-        'PORT': '',            
+        'PASSWORD': '******',         # must change
+        'HOST': 'localhost',        # must change
+        'PORT': '',             # must change
     }
 }
 # Internationalization
@@ -109,11 +116,11 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
+STATIC_ROOT = '/opt/lampp/apache2/htdocs/static'
+STATIC_URL ='http://83.212.97.66/static/'
 
-STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
-   
-    os.path.join(os.path.dirname(__file__), 'static'),
-  
+#    #"C:/Users/Elvis/Desktop/Diplwmatikh/uth_research/uth_research/static",
+     os.path.join(os.path.dirname(__file__), 'static'),
 )
