@@ -1,7 +1,8 @@
 Diploma_Thesis_Project
 ======================
 
-Our system collects data and produces information about the research activity of the University of Thessaly. All this data is collected in an automatic way in real time through web crawling from Scopus, Microsoft Academic Search and IEEE Xplore. Then, having this data, our system produces valuable information and research metrics that represent the University's activity using data visualization techniques.
-Finally,the system was developed with Django, Python and other web technologies and libraries.
+The developed information system provides capabilities of searching and retrieving of qualitative and quantitative information of research activities, information which is produced and collected automatically through web crawling techniques in real time. In particular, the system categorizes and manages a continuous flow of raw data in order to produce information that leads to qualitative and quantitative evaluation metrics. It presents both the raw data and the added valuable data and information in an intelligent and effective way adapted to the background and the interests of the viewer using data visualization techniques.
+
+Technology used: Django, Python, MySQL, D3.j, Highcharts, JavaScript/JQuery, AJAX, HTML/HTML5, CSS/CSS3
 
 URL:http://83.212.97.66:8000/
