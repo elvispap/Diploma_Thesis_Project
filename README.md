@@ -5,4 +5,4 @@ The developed information system provides capabilities of searching and retrievi
 
 Technology used: Django, Python, MySQL, D3.j, Highcharts, JavaScript/JQuery, AJAX, HTML/HTML5, CSS/CSS3
 
-URL: http://elvispapa.pythonanywhere.com/
+URL: http://research.e-ce.uth.gr/
